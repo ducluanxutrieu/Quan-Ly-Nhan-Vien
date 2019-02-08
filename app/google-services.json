@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "615792692592",
+    "firebase_url": "https://quan-ly-nhan-vien.firebaseio.com",
+    "project_id": "quan-ly-nhan-vien",
+    "storage_bucket": "quan-ly-nhan-vien.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615792692592:android:1bcebb4cfe59a069",
+        "android_client_info": {
+          "package_name": "com.ducluanxutrieu.quanlynhanvien"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "615792692592-odsaegb3hifdsmphmjol7c2gjqsblvvl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCix_xD-eFlLqPnu-k4k-CjwfgdpjOy_iI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view_chats"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toTopOf="@id/chats_input_layout"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+    </android.support.v7.widget.RecyclerView>
+    <LinearLayout
+        android:id="@+id/chats_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recycler_view_chats"
+        >
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="8"
+            android:layout_height="50dp"
+            android:id="@+id/edit_text_input_chats"
+            android:hint="@string/your_message"
+
+            />
+        <ImageButton
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:src="@drawable/send"
+            android:id="@+id/image_button_send_message"
+            android:layout_gravity="fill"
+            />
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
