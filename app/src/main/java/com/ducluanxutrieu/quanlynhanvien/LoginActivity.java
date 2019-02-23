@@ -35,8 +35,10 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,12 +76,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        autoLogin();
         setContentView(R.layout.activity_login);
         // Set up the login form.
+
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
-
-        autoLogin();
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -298,15 +300,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         };
 
         int ADDRESS = 0;
-        int IS_PRIMARY = 1;
     }
 
     private void autoLogin(){
-        SharedPreferences shared = getSharedPreferences("com.ducluanxutrieu.quanlynhanvien", 0);
-        String email = shared.getString("email", "");
-        String password = shared.getString("password", "");
-        mAuthTask = new UserLoginTask(email, password);
-        mAuthTask.execute((Void) null);
+        FirebaseAuth mAuth;
+        FirebaseApp.initializeApp(this);
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser mUser = mAuth.getCurrentUser();
+
+        if (mUser != null){
+            finish();
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        }
     }
 
     /**
@@ -331,15 +336,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             try {
                 // Simulate network access.
-                Log.i("test", "ádfasfd");
                 mAuth.signInWithEmailAndPassword(mEmail, mPassword).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            SharedPreferences shared = getSharedPreferences("com.ducluanxutrieu.quanlynhanvien", 0);
-                            shared.edit().putString("email", mEmail)
-                                    .putString("password", mPassword)
-                                    .apply();
+                        if (task.isComplete()){
                             Toast.makeText(getApplicationContext(), getString(R.string.login_successful), Toast.LENGTH_LONG).show();
                             onPostExecute(true);
                         }
@@ -368,18 +368,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
+            Log.i("testtest", " " + success);
             if (success) {
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 finish();
                 startActivity(intent);
-            }/* else {
+            } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
-            }*/
+            }
         }
 
         @Override
@@ -387,8 +387,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
-
-
     }
 }
 

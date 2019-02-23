@@ -1,4 +1,4 @@
-package com.ducluanxutrieu.quanlynhanvien.Admin;
+package com.ducluanxutrieu.quanlynhanvien.Adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,24 +6,31 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Staff.Staff;
+import com.ducluanxutrieu.quanlynhanvien.Users;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<Staff> staffList;
-    private Context context;
+    private List<Users> usersList;
+    public Context context;
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+/*            Bundle bundle = new Bundle();
+            bundle.putString("test", "ádđ ");
+            ChatsFragment chatsFragment = new ChatsFragment();
+            chatsFragment.setArguments(bundle);
+            mainActivity.getSupportFragmentManager().beginTransaction().commit();*/
+        }
+    };
 
-    public StaffListAdapter(RecyclerView recyclerView, ArrayList<Staff> staffList, Context context){
-        this.staffList = staffList;
+    public StaffListAdapter(ArrayList<Users> usersList, Context context){
+        this.usersList = usersList;
         this.context = context;
-
-
     }
 
     @NonNull
@@ -37,23 +44,22 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         ItemViewHolder itemViewHolder = (ItemViewHolder) viewHolder;
-        itemViewHolder.avatar.setImageResource(staffList.get(i).getAvatar());
-        itemViewHolder.name.setText(staffList.get(i).getName());
+        itemViewHolder.name.setText(usersList.get(i).getName());
+        itemViewHolder.recentChat.setText(usersList.get(i).getRecentChat());
+        viewHolder.itemView.setOnClickListener(onClickListener);
     }
 
     @Override
     public int getItemCount() {
-        return staffList.size();
+        return usersList.size();
     }
 
     public class ItemViewHolder extends RecyclerView.ViewHolder {
-        ImageView avatar;
-        TextView name, chatContent;
+        TextView name, recentChat;
         public ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            avatar = itemView.findViewById(R.id.avatar);
-            chatContent = itemView.findViewById(R.id.content_chats);
-            name = itemView.findViewById(R.id.name);
+            recentChat = itemView.findViewById(R.id.recent_chats);
+            name = itemView.findViewById(R.id.staff_name);
         }
     }
 }

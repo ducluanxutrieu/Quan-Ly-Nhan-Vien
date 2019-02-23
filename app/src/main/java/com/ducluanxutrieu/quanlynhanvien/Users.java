@@ -1,22 +1,22 @@
-package com.ducluanxutrieu.quanlynhanvien.Staff;
+package com.ducluanxutrieu.quanlynhanvien;
 
-public class Staff {
+public class Users {
     private String name;
-    private String age;
     private String email;
     private String phone;
-    private String address;
     private String position;
-    private int avatar;
+    private String recentChat;
+    private String password;
 
-    public Staff(String name, String age, String email, String phone, String address, String position, int avatar) {
+    public Users(String name, String email, String password, String phone, String position) {
         this.name = name;
-        this.age = age;
         this.email = email;
+        this.password = password;
         this.phone = phone;
-        this.address = address;
         this.position = position;
-        this.avatar = avatar;
+    }
+
+    public Users() {
     }
 
     public String getName() {
@@ -25,14 +25,6 @@ public class Staff {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getAge() {
-        return age;
-    }
-
-    public void setAge(String age) {
-        this.age = age;
     }
 
     public String getEmail() {
@@ -51,14 +43,6 @@ public class Staff {
         this.phone = phone;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getPosition() {
         return position;
     }
@@ -67,11 +51,19 @@ public class Staff {
         this.position = position;
     }
 
-    public int getAvatar() {
-        return avatar;
+    public String getRecentChat() {
+        return recentChat;
     }
 
-    public void setAvatar(int avatar) {
-        this.avatar = avatar;
+    public void setRecentChat(String recentChat) {
+        this.recentChat = recentChat;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

@@ -23,4 +23,20 @@
     <string name="action_settings">Settings</string>
     <string name="your_message">Your Message</string>
     <string name="staff_list">Staff List</string>
+    <string name="hello_world">hello world</string>
+    <string name="please_login_again">Please Login again</string>
+    <string name="full_name">Full Name</string>
+    <string name="birthday">Birthday</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email:</string>
+    <string name="address">Address</string>
+    <string name="position_in_company">Position in company</string>
+    <string name="add_new_member">Add new nember:</string>
+    <string name="cancel">Cancel!</string>
+    <string name="password">Password</string>
+    <string name="add_new_member_complete">Add new member complete!</string>
+    <string name="have_a_problem_with_create_new_account_member">Have a problem with create new account member!</string>
+    <string name="create_new_account_member_complete">Create new account member complete!</string>
+    <string name="change_language">Change Language</string>
+    <string name="sign_out">Sign Out</string>
 </resources>
