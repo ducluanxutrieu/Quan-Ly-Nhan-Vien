@@ -14,9 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ducluanxutrieu.quanlynhanvien.Adapter.StaffListAdapter;
+import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewAccountFragmentDialog;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.ducluanxutrieu.quanlynhanvien.Users;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +36,13 @@ public class StaffListFragment extends Fragment {
     private TransferSignal mTransferSignal;
     private FloatingActionButton fab;
 
+    FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mUsersReference;
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private ChildEventListener mChildEvenListener;
+    private FirebaseAuth mFireUser;
+
     public StaffListFragment(){};
     @Nullable
     @Override
@@ -40,7 +54,9 @@ public class StaffListFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mTransferSignal.onTransferSignal("ShowDialogAddAccount");
+                //mTransferSignal.onTransferSignal("ShowDialogAddAccount");
+                AddNewAccountFragmentDialog mAddNewAccountDialog = new AddNewAccountFragmentDialog();
+                mAddNewAccountDialog.show(getFragmentManager(), "dialog");
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
             }
@@ -59,6 +75,10 @@ public class StaffListFragment extends Fragment {
         mRecyclerViewStaff.setLayoutManager(layoutManager);
         mStaffListAdapter = new StaffListAdapter((ArrayList<Users>) usersList, getContext());
         mRecyclerViewStaff.setAdapter(mStaffListAdapter);
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mUsersReference = mFirebaseDatabase.getReference().child("user");
+        attachDatabaseReadListener();
     }
 
     @Override
@@ -72,10 +92,41 @@ public class StaffListFragment extends Fragment {
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
     }
 
-    public void onAddUser(Users users){
-        Log.i("kiemtra", "2");
-        usersList.add(users);
-        mStaffListAdapter.notifyDataSetChanged();
+    private void attachDatabaseReadListener() {
+        if (mChildEvenListener == null){
+            mChildEvenListener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    Users users = dataSnapshot.getValue(Users.class);
+                    usersList.add(users);
+                    mStaffListAdapter.notifyDataSetChanged();
+                }
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                }
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
+            mUsersReference.addChildEventListener(mChildEvenListener);
+        }
+    }
+
+    private void detachDatabaseReadListener() {
+        if (mChildEvenListener != null){
+            mUsersReference.removeEventListener(mChildEvenListener);
+            mChildEvenListener = null;
+        }
     }
 
 }
