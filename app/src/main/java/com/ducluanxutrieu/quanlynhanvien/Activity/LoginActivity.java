@@ -1,4 +1,4 @@
-package com.ducluanxutrieu.quanlynhanvien;
+package com.ducluanxutrieu.quanlynhanvien.Activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ducluanxutrieu.quanlynhanvien.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
@@ -373,6 +374,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
             Log.i("testtest", " " + success);
             if (success) {
+                SharedPreferences sharedPreferences = getSharedPreferences("com.ducluanxutrieu.quanlynhanvien", 0);
+                sharedPreferences.edit().putString("email", mEmail)
+                        .apply();
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 finish();
                 startActivity(intent);

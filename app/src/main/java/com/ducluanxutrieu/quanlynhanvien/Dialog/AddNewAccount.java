@@ -15,8 +15,8 @@ import android.widget.EditText;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferData;
 import com.ducluanxutrieu.quanlynhanvien.R;
 
-public class AddNewAccountFragmentDialog extends DialogFragment {
-    public AddNewAccountFragmentDialog(){}
+public class AddNewAccount extends DialogFragment {
+    public AddNewAccount(){}
     EditText name, email, password, phone, position;
 
     TransferData transferData;

@@ -1,31 +1,38 @@
 package com.ducluanxutrieu.quanlynhanvien.Activity;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Users;
-import com.firebase.ui.auth.data.model.User;
+import com.ducluanxutrieu.quanlynhanvien.Item.Users;
 
 public class UserInfoActivity extends AppCompatActivity {
-    TextView name, phone, email, password, position;
+    TextView phone, email, password, position;
+    CollapsingToolbarLayout mCollapsingToolbarLayout;
+    Toolbar toolbar;
+    Users users;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        Intent intent = getIntent();
+        users = (Users) intent.getSerializableExtra("user");
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        mCollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        mCollapsingToolbarLayout.setTitle(users.getName());
+        mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorAccent));
+
         mapping();
         show();
     }
 
     private void mapping() {
-        name = findViewById(R.id.name_user_info);
         email = findViewById(R.id.email_user_info);
         position = findViewById(R.id.position_user_info);
         phone = findViewById(R.id.phone_user_info);
@@ -33,13 +40,10 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void show() {
-        Intent intent = getIntent();
-        Users users = (Users) intent.getSerializableExtra("user");
-        name.setText(users.getName());
-        email.setText(users.getEmail());
-        position.setText(users.getPosition());
-        phone.setText(users.getPhone());
-        password.setText(users.getPassword());
+        email.setText("Email: " + users.getEmail());
+        position.setText(getString(R.string.position_in_company) + ": " + users.getPosition());
+        phone.setText(getString( R.string.phone_number) + ": " + users.getPhone());
+        password.setText(getString(R.string.password) + ": " + users.getPassword());
 
     }
 }

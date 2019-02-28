@@ -1,11 +1,14 @@
-package com.ducluanxutrieu.quanlynhanvien;
+package com.ducluanxutrieu.quanlynhanvien.Item;
 
 public class MessageItem {
     private String text;
     private String name;
-    private int photoUrl;
+    private String photoUrl;
 
-    public MessageItem(String text, String name, int photoUrl) {
+    public MessageItem() {
+    }
+
+    public MessageItem(String text, String name, String photoUrl) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
@@ -27,11 +30,11 @@ public class MessageItem {
         this.name = name;
     }
 
-    public int getPhotoUrl() {
+    public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setPhotoUrl(int photoUrl) {
+    public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
     }
 }

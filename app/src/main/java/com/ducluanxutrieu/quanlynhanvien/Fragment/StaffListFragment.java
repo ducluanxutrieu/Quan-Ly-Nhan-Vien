@@ -1,4 +1,4 @@
-package com.ducluanxutrieu.quanlynhanvien.Admin;
+package com.ducluanxutrieu.quanlynhanvien.Fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,17 +8,15 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.ducluanxutrieu.quanlynhanvien.Adapter.StaffListAdapter;
-import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewAccountFragmentDialog;
+import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewAccount;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Users;
-import com.google.firebase.auth.FirebaseAuth;
+import com.ducluanxutrieu.quanlynhanvien.Item.Users;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,15 +31,12 @@ public class StaffListFragment extends Fragment {
     RecyclerView mRecyclerViewStaff;
     StaffListAdapter mStaffListAdapter;
     List<Users> usersList;
-    private TransferSignal mTransferSignal;
+    TransferSignal mTransferSignal;
     private FloatingActionButton fab;
 
     FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersReference;
-    private FirebaseAuth mFirebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
     private ChildEventListener mChildEvenListener;
-    private FirebaseAuth mFireUser;
 
     public StaffListFragment(){};
     @Nullable
@@ -55,7 +50,7 @@ public class StaffListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 //mTransferSignal.onTransferSignal("ShowDialogAddAccount");
-                AddNewAccountFragmentDialog mAddNewAccountDialog = new AddNewAccountFragmentDialog();
+                AddNewAccount mAddNewAccountDialog = new AddNewAccount();
                 mAddNewAccountDialog.show(getFragmentManager(), "dialog");
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
@@ -89,7 +84,7 @@ public class StaffListFragment extends Fragment {
 
     private void mapping(View view){
         mRecyclerViewStaff = view.findViewById(R.id.recycler_view_staff_list);
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        fab = view.findViewById(R.id.fab);
     }
 
     private void attachDatabaseReadListener() {

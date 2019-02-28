@@ -1,2 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_name">Quản Lý Nhân Viên</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Mật khẩu</string>
+    <string name="action_sign_in">Đăng nhập</string>
+    <string name="action_sign_in_short">Đăng nhập</string>
+    <string name="error_invalid_email">Địa chỉ email này không hợp lệ</string>
+    <string name="error_invalid_password">Mật khẩu quá ngắn</string>
+    <string name="error_incorrect_password">Mật khẩu này không chính xác</string>
+    <string name="error_field_required">Trường này là bắt buộc</string>
+    <string name="permission_rationale">Quyền truy cập danh bạ cần để cung cấp email</string>
+    <string name="there_are_a_problem_signing_in">Gặp vấn đề về đăng nhập</string>
+    <string name="login_successful">Đăng nhập thành công</string>
+    <string name="action_settings">Cài đặt</string>
+    <string name="staff_list">Danh sách nhân viên</string>
+    <string name="hello_world">Xin chào thế giới</string>
+    <string name="please_login_again">Vui lòng đăng nhập lại</string>
+    <string name="full_name">Họ và tên</string>
+    <string name="birthday">Ngày sinh</string>
+    <string name="phone_number">Số điện thoại</string>
+    <string name="address">Địa chỉ</string>
+    <string name="position_in_company">Vị trí, chức vụ trong công ty</string>
+    <string name="add_new_member">Thêm thành viên</string>
+    <string name="password">Mật khẩu</string>
+    <string name="add_new_member_complete">Thêm thành viên mới thành công</string>
+    <string name="have_a_problem_with_create_new_account_member">Gặp vấn đề với tạo mới tài khoản này</string>
+    <string name="create_new_account_member_complete">Tạo tài khoản thành công</string>
+    <string name="change_language">Thay đổi ngôn ngữ</string>
+    <string name="sign_out">Đăng xuất</string>
+    <string name="input_email_your_friend">Nhập vào email cần kiếm</string>
+    <string name="add_new_friend">Thêm bạn</string>
+    <string name="add">Thêm</string>
+    <string name="cancel">Hủy</string>
+</resources>

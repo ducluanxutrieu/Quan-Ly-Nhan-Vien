@@ -1,30 +1,30 @@
-package com.ducluanxutrieu.quanlynhanvien;
+package com.ducluanxutrieu.quanlynhanvien.Activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Fragment.FriendsListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.StaffListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.TasksFragment;
-import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewAccount;
+import com.ducluanxutrieu.quanlynhanvien.Item.Friend;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferData;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
+import com.ducluanxutrieu.quanlynhanvien.PushNotificationManager;
+import com.ducluanxutrieu.quanlynhanvien.R;
+import com.ducluanxutrieu.quanlynhanvien.Item.TokenUser;
+import com.ducluanxutrieu.quanlynhanvien.Item.Users;
+import com.ducluanxutrieu.quanlynhanvien.Adapter.ViewPagerAdapter;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -36,8 +36,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.Locale;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 public class MainActivity extends AppCompatActivity
         implements TransferData, TransferSignal {
@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity
     private boolean isUserAdmin = false;
     private boolean userAlreadyFriend = false;
 
+    private String rootEmail;
+    private static String TAG = "tokentoken";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        PushNotificationManager.getInstance().init(this);
         mViewPager = findViewById(R.id.view_pager);
         mTabLayout = findViewById(R.id.tab_layout);
         mViewPager.setSaveFromParentEnabled(false);
@@ -81,9 +83,9 @@ public class MainActivity extends AppCompatActivity
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null){
-                    onSignedInInitialize();
+                FirebaseUser user = mFireUser.getCurrentUser();
+                if (user !=  null) {
+                    setTitle(user.getDisplayName());
                 }
             }
         };
@@ -91,29 +93,36 @@ public class MainActivity extends AppCompatActivity
         mViewPagerAdapter.addFragment(new FriendsListFragment(), "Friends List");
         mViewPagerAdapter.addFragment(new TasksFragment(), "Tasks");
 
+
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(MainActivity.this);
+
         checkAdmin();
 
-        mViewPager.setAdapter(mViewPagerAdapter);
-        mTabLayout.setupWithViewPager(mViewPager);
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+                        Log.i("kiemtra1", token);
+                        // Log and toast
+                        TokenUser tokenUser1 = new TokenUser(token);
+                        mUsersReference.child("token/" + rootEmail).setValue(tokenUser1);
+                    }
+                });
 
-        mTabLayout.getTabAt(0).setIcon(R.drawable.avatar);
-        mTabLayout.getTabAt(1).setIcon(R.drawable.list);
-        if (mViewPagerAdapter.getCount() == 3){
-            mTabLayout.getTabAt(2).setIcon(R.drawable.staff);
-        }
-
-        listenLanguageSystem();
+        mViewPager.setOffscreenPageLimit(3);
     }
 
-    private void listenLanguageSystem() {
-        Locale locale = MainActivity.this.getResources().getConfiguration().locale;
-        Log.i("locale", locale.getDisplayLanguage());
-    }
 
     private void checkAdmin() {
-        String[] email = mFirebaseAuth.getCurrentUser().getEmail().split("@");
-
-        DatabaseReference oneItemValue = mUsersReference.child("user" + "/" + email[0]);
+        SharedPreferences sharedPreferences = getSharedPreferences("com.ducluanxutrieu.quanlynhanvien", 0);
+        rootEmail = sharedPreferences.getString("email", ".").replace(".", "");
+        DatabaseReference oneItemValue = mUsersReference.child("user" + "/" + rootEmail);
         oneItemValue.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -121,7 +130,13 @@ public class MainActivity extends AppCompatActivity
                 isUserAdmin = userAdmin.isAdmin();
                 if (isUserAdmin){
                     mViewPagerAdapter.addFragment(new StaffListFragment(), getString(R.string.staff_list));
-                    mViewPagerAdapter.notifyDataSetChanged();
+                }
+                mViewPager.setAdapter(mViewPagerAdapter);
+                mTabLayout.setupWithViewPager(mViewPager);
+                mTabLayout.getTabAt(0).setIcon(R.drawable.avatar);
+                mTabLayout.getTabAt(1).setIcon(R.drawable.list);
+                if (mViewPagerAdapter.getCount() == 3) {
+                    mTabLayout.getTabAt(2).setIcon(R.drawable.staff);
                 }
             }
 
@@ -142,11 +157,6 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthStateListener);
-    }
-
-    private void onSignedInInitialize() {
-        FirebaseUser user = mFirebaseAuth.getCurrentUser();
-        setTitle(user.getDisplayName());
     }
 
     @Override
@@ -171,7 +181,6 @@ public class MainActivity extends AppCompatActivity
             }
             break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -191,14 +200,14 @@ public class MainActivity extends AppCompatActivity
                             user.updateProfile(profileUpdate);
                             String uid = user.getUid();
                             Users users = new Users(name, email, password, phone, position, uid, false);
-                            String[] emailChange = email.split("@");
-                            mUsersReference.child("user/" + emailChange[0]).setValue(users);
-                            Toast.makeText(MainActivity.this, getString(R.string.add_new_member_complete), Toast.LENGTH_LONG).show();
+                            String emailChange = email.replace(".", "");
+                            mUsersReference.child("user/" + emailChange).setValue(users);
+                            //Toast.makeText(MainActivity.this, getString(R.string.add_new_member_complete), Toast.LENGTH_LONG).show();
                             mFirebaseAuth = mFireUser;
                         }
                     }).start();
                 } else {
-                    Toast.makeText(getApplicationContext(), getString(R.string.have_a_problem_with_create_new_account_member), Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, getString(R.string.have_a_problem_with_create_new_account_member), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -207,12 +216,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onTransferSignal(String signalMessage, String message) {
         if (signalMessage.equals("AddFriend")){
-                final String[] emailInput = message.split("@");
-                final String[] rootEmail = mFireUser.getCurrentUser().getEmail().split("@");
-                checkFriendAlreadyExist(rootEmail[0], emailInput[0]);
+                final String emailInput = message.replace(".", "");
+                final String rootEmail = mFireUser.getCurrentUser().getEmail().replace(".", "");
+                checkFriendAlreadyExist(rootEmail, emailInput);
                 if (!userAlreadyFriend) {
                     try {
-                    mFriendReference.child("user/" + emailInput[0]).addListenerForSingleValueEvent(new ValueEventListener() {
+                    mFriendReference.child("user/" + emailInput).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Users users = dataSnapshot.getValue(Users.class);
@@ -221,7 +230,7 @@ public class MainActivity extends AppCompatActivity
                                 String uid = users.getUid();
                                 if (name != null && uid != null) {
                                     Friend friend = new Friend(users.getName(), users.getEmail(), users.getUid(), "");
-                                    mFriendReference.child("friend_ship/" + rootEmail[0] + "/" + emailInput[0]).setValue(friend);
+                                    mFriendReference.child("friend_ship/" + rootEmail + "/" + emailInput).setValue(friend);
                                     Toast.makeText(getApplicationContext(), "Add " + friend.getName() + " succesful", Toast.LENGTH_LONG).show();
                                 }
                             }else {
@@ -242,7 +251,6 @@ public class MainActivity extends AppCompatActivity
                 }else {
                     Toast.makeText(MainActivity.this, "Your friend already exist!", Toast.LENGTH_LONG).show();
                 }
-
         }
     }
 
