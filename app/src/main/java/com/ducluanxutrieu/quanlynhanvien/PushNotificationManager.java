@@ -1,11 +1,13 @@
 package com.ducluanxutrieu.quanlynhanvien;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 public class PushNotificationManager {
@@ -14,6 +16,23 @@ public class PushNotificationManager {
     private Context context;
     private NotificationManager notifyManager;
     private static int PUSH_NOTIFICATION_ID = 0;
+    private static String CHANNEL_ID = "123";
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "channel_name";
+            String description = "channel_description";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
     public static PushNotificationManager getInstance() {
         if (pushNotifyManager == null) {
@@ -28,7 +47,7 @@ public class PushNotificationManager {
                 .getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    public int generateNotification(String notifyMessage, Class<?> cls) {
+    void generateNotification(String title, String notifyMessage, Class<?> cls) {
         PUSH_NOTIFICATION_ID++;
 
         String noticeTitle = context.getString(R.string.app_name);
@@ -44,10 +63,12 @@ public class PushNotificationManager {
         stackBuilder.addNextIntent(notificationIntent);
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(PUSH_NOTIFICATION_ID, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this.context);
-        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        createNotificationChannel();
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this.context, CHANNEL_ID);
+        mBuilder.setSmallIcon(R.drawable.ic_stat_ic_notification);
         mBuilder.setTicker(noticeTitle);
-        mBuilder.setContentTitle(noticeTitle);
+        mBuilder.setContentTitle(title);
         mBuilder.setContentText(notifyMessage);
         mBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
         mBuilder.setOngoing(false);
@@ -57,7 +78,6 @@ public class PushNotificationManager {
         // Play default notification sound
         mBuilder.setDefaults(Notification.DEFAULT_LIGHTS);
         notifyManager.notify(PUSH_NOTIFICATION_ID, mBuilder.build());
-        return PUSH_NOTIFICATION_ID;
     }
 
     public void cancelNotification(int notifyId) {

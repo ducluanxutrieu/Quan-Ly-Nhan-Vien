@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_margin="@dimen/margin_vertical"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/margin_vertical"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/chose_a_day_you_off"
+            android:layout_marginEnd="@dimen/margin_vertical"
+            />
+
+        <TextView
+            android:id="@+id/btn_chose_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_vertical"
+            android:text="01/01/2019"
+            android:textSize="@dimen/calendar_size_show" />
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/input_your_content"
+        android:layout_marginTop="@dimen/margin_top_content"
+        android:layout_marginStart="@dimen/margin_vertical"
+        />
+    <EditText
+        android:id="@+id/input_content_ask"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_300sdp"
+        android:gravity="top|start"
+        android:inputType="textMultiLine"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_cancel_ask_off"
+            android:text="@string/cancel"
+            android:layout_margin="@dimen/margin_vertical"
+            />
+        <Button
+            android:id="@+id/btn_send_ask_off"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send"
+            android:layout_margin="@dimen/margin_vertical"
+            android:enabled="false"
+            />
+
+    </LinearLayout>
+</LinearLayout>

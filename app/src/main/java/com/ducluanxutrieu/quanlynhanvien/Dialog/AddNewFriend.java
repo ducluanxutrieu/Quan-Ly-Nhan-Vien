@@ -50,32 +50,6 @@ public class AddNewFriend extends DialogFragment {
                 .setNegativeButton(getString(R.string.cancel), null);
         return builder.create();
     }
-
-    /*@Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        inputEmail.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().length() > 0){
-                    if (s.toString().contains("@") && s.toString().contains(".")){
-
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-    }*/
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

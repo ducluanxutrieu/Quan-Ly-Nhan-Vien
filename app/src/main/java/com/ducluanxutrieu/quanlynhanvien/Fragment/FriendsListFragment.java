@@ -44,7 +44,7 @@ public class FriendsListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.friends_list_fragment, container, false);
+        final View rootView = inflater.inflate(R.layout.friends_list_fragment, container, false);
 
         mRecyclerViewFriends = rootView.findViewById(R.id.recycler_view_friends_list);
         mFAB = rootView.findViewById(R.id.fab_add_friend);

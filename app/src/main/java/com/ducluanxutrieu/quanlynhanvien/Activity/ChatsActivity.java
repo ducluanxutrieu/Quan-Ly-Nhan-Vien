@@ -3,6 +3,7 @@ package com.ducluanxutrieu.quanlynhanvien.Activity;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -15,8 +16,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Adapter.MessageAdapter;
+import com.ducluanxutrieu.quanlynhanvien.Item.ChatID;
 import com.ducluanxutrieu.quanlynhanvien.Item.Friend;
 import com.ducluanxutrieu.quanlynhanvien.Item.MessageItem;
 import com.ducluanxutrieu.quanlynhanvien.R;
@@ -33,8 +36,22 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatsActivity extends AppCompatActivity {
     RecyclerView mChatRecyclerView;
@@ -52,6 +69,7 @@ public class ChatsActivity extends AppCompatActivity {
     FirebaseUser mUserFire;
     Friend friend;
     String rootName;
+    String chatIDWith;
 
     private static String token;
     public static String TAG = ".ChatsActivity";
@@ -78,6 +96,8 @@ public class ChatsActivity extends AppCompatActivity {
 
         mMessageAdapter = new MessageAdapter(mMessageItems, rootName);
         mChatRecyclerView.setAdapter(mMessageAdapter);
+
+        //findChatID();
 
         mMessageReferenceSend = mMessageFireDatabase.getReference().child("message" + "/" + mUserFire.getEmail().replace(".", "") + "/" + friend.getEmail().replace(".", ""));
         mMessageReferenceReceive = mMessageFireDatabase.getReference().child("message" + "/" + friend.getEmail().replace(".", "") + "/" + mUserFire.getEmail().replace(".", ""));
@@ -111,13 +131,75 @@ public class ChatsActivity extends AppCompatActivity {
                 String mPushKey = mMessageReferenceSend.push().getKey();
                 mMessageReferenceSend.child(mPushKey).setValue(messageItem);
                 mMessageReferenceReceive.child(mPushKey).setValue(messageItem);
-
+                pushNoti();
                 mInputChatEditText.setText("");
-                mChatRecyclerView.scrollToPosition(mMessageAdapter.getItemCount());
             }
         });
 
         getToken();
+    }
+
+     private void pushNoti() {
+        AsyncTask<String, Void ,String> task = new AsyncTask<String, Void, String>() {
+            @Override
+            protected String doInBackground(String... strings) {
+                String BASE_URL = strings[0];
+                String query = strings[1];
+                StringBuilder result = new StringBuilder();
+                try {
+                    URL url = new URL(BASE_URL);
+                    HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+                    httpCon.setDoOutput(true);
+                    httpCon.setDoInput(true);
+                    httpCon.setRequestMethod("POST");
+                    httpCon.setRequestProperty("Accept", "application/json");
+                    httpCon.setRequestProperty("Content-Type", "application/json");
+
+                    OutputStream os = httpCon.getOutputStream();
+                    OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
+                    osw.write(query);
+                    osw.flush();
+                    osw.close();
+                    os.close();  //don't forget to close the OutputStream
+                    httpCon.connect();
+
+                    //read the inputstream and print it
+                    InputStream inputStream = httpCon.getInputStream();
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    String line = "";
+
+                    //send message result
+                    while((line = bufferedReader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    bufferedReader.close();
+                    inputStreamReader.close();
+                    inputStream.close();
+                    System.out.println(result.toString());
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return result.toString();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                Toast.makeText(ChatsActivity.this, s, Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        final String BASE_URL = "https://quan-ly-nhan-vien.firebaseapp.com/api";
+        String name = rootName;
+        String message = mInputChatEditText.getText().toString();
+        String to = token;
+        //{"data":{"title":"luanxx","message":"cac"},"to":"ejgJWQ"}
+        String query = "{\"data\":{\"title\":\""+name +"\",\"message\":\""+ message + "\"},\"to\":\""+to+"\"}";
+        Log.i("QUERY", query);
+        task.execute(BASE_URL, query);
     }
 
     private void getToken() {
@@ -150,46 +232,6 @@ public class ChatsActivity extends AppCompatActivity {
         // [END fcm_runtime_enable_auto_init]
     }
 
-    public String getAccount() {
-        // This call requires the Android GET_ACCOUNTS permission
-        Account[] accounts = AccountManager.get(this /* activity */).
-                getAccountsByType("com.google");
-        if (accounts.length == 0) {
-            return null;
-        }
-        return accounts[0].name;
-    }
-
-    public void getAuthToken() {
-        // [START fcm_get_token]
-        String accountName = getAccount();
-
-        // Initialize the scope using the client ID you got from the Console.
-        final String scope = "audience:server:client_id:"
-                + "1262xxx48712-9qs6n32447mcj9dirtnkyrejt82saa52.apps.googleusercontent.com";
-
-        String idToken = null;
-        try {
-            idToken = GoogleAuthUtil.getToken(this, accountName, scope);
-        } catch (Exception e) {
-            Log.w(TAG, "Exception while getting idToken: " + e);
-        }
-        // [END fcm_get_token]
-    }
-
-    public void sendUpstream(String message) {
-
-        final String SENDER_ID = token;
-        final int messageId = 0; // Increment for each
-        // [START fcm_send_upstream]
-        FirebaseMessaging fm = FirebaseMessaging.getInstance();
-        fm.send(new RemoteMessage.Builder("615792692592")
-                .setMessageId(Integer.toString(messageId))
-                .addData("my_message", message)
-                .addData("to",token)
-                .build());
-        // [END fcm_send_upstream]
-    }
     private void attachDatabaseReadListener() {
         if (mMessageChildEvenListener == null){
             mMessageChildEvenListener = new ChildEventListener() {
@@ -197,7 +239,8 @@ public class ChatsActivity extends AppCompatActivity {
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     MessageItem messageItem = dataSnapshot.getValue(MessageItem.class);
                     mMessageItems.add(messageItem);
-                    mMessageAdapter.notifyDataSetChanged();
+                    mMessageAdapter.notifyItemChanged(mMessageItems.size());
+                    mChatRecyclerView.scrollToPosition(mMessageAdapter.getItemCount() - 1);
                 }
 
                 @Override
@@ -238,4 +281,3 @@ public class ChatsActivity extends AppCompatActivity {
         mSendImageButton = findViewById(R.id.send_message_image_button);
     }
 }
-

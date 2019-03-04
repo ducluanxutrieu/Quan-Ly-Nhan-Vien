@@ -45,15 +45,11 @@ public class StaffListFragment extends Fragment {
         final View viewInflate = inflater.inflate(R.layout.staff_list_fragment, container, false);
         mapping(viewInflate);
 
-        //fab.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.add_icon));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //mTransferSignal.onTransferSignal("ShowDialogAddAccount");
                 AddNewAccount mAddNewAccountDialog = new AddNewAccount();
                 mAddNewAccountDialog.show(getFragmentManager(), "dialog");
-                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
             }
         });
 

@@ -13,15 +13,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.ducluanxutrieu.quanlynhanvien.Dialog.ChangePassword;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.FriendsListFragment;
+import com.ducluanxutrieu.quanlynhanvien.Fragment.RequestListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.StaffListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.TasksFragment;
+import com.ducluanxutrieu.quanlynhanvien.Interface.TransferTask;
 import com.ducluanxutrieu.quanlynhanvien.Item.Friend;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferData;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
+import com.ducluanxutrieu.quanlynhanvien.Item.TokenUser;
 import com.ducluanxutrieu.quanlynhanvien.PushNotificationManager;
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Item.TokenUser;
 import com.ducluanxutrieu.quanlynhanvien.Item.Users;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.ViewPagerAdapter;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -39,124 +42,122 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
-public class MainActivity extends AppCompatActivity
-        implements TransferData, TransferSignal {
+import java.util.Calendar;
 
-    ViewPager mViewPager;
-    TabLayout mTabLayout;
-    ViewPagerAdapter mViewPagerAdapter;
+public class MainActivity extends AppCompatActivity
+        implements TransferData, TransferSignal, TransferTask {
+
+    private ViewPager mViewPager;
+    private TabLayout mTabLayout;
+    private ViewPagerAdapter mViewPagerAdapter;
 
     FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mUsersReference;
     private DatabaseReference mFriendReference;
     private FirebaseAuth mFirebaseAuth;
-    private FirebaseAuth.AuthStateListener mAuthStateListener;
-    private FirebaseAuth mFireUser;
+    FirebaseUser mFireUser;
 
     private boolean isUserAdmin = false;
     private boolean userAlreadyFriend = false;
 
-    private String rootEmail;
+    private String rootEmailWithoutDot;
+    public String password, email;
     private static String TAG = "tokentoken";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         PushNotificationManager.getInstance().init(this);
         mViewPager = findViewById(R.id.view_pager);
         mTabLayout = findViewById(R.id.tab_layout);
+
         mViewPager.setSaveFromParentEnabled(false);
-        mViewPager.setOffscreenPageLimit(1);
 
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mFireUser = mFirebaseAuth;
+        mViewPager.setAdapter(mViewPagerAdapter);
+        mTabLayout.setupWithViewPager(mViewPager);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersReference = mFirebaseDatabase.getReference();
         mFriendReference = mFirebaseDatabase.getReference();
 
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = mFireUser.getCurrentUser();
-                if (user !=  null) {
-                    setTitle(user.getDisplayName());
-                }
-            }
-        };
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFireUser = mFirebaseAuth.getCurrentUser();
+        if (mFireUser !=  null) {
+            Log.i("USERSTATE", "Ok");
+            setTitle(mFireUser.getDisplayName());
+            mViewPagerAdapter.addFragment(new FriendsListFragment(), "Friends List");
+            mViewPagerAdapter.addFragment(new TasksFragment(), "Tasks");
+            mViewPagerAdapter.notifyDataSetChanged();
+            checkAdmin();
+        } else {
+            Log.i("USERSTATE", "Null");
+        }
 
-        mViewPagerAdapter.addFragment(new FriendsListFragment(), "Friends List");
-        mViewPagerAdapter.addFragment(new TasksFragment(), "Tasks");
-
+        PushNotificationManager.getInstance().init(this);
 
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(MainActivity.this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                if (!task.isSuccessful()) {
+                                    Log.w(TAG, "getInstanceId failed", task.getException());
+                                    return;
+                                }
+                                // Get new Instance ID token
+                                String token = task.getResult().getToken();
+                                Log.i("kiemtra1", token);
+                                // Log and toast
+                                TokenUser tokenUser1 = new TokenUser(token);
+                                mUsersReference.child("token/" + rootEmailWithoutDot).setValue(tokenUser1);
+                            }
+                        });
+            }
+        });
 
-        checkAdmin();
-
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "getInstanceId failed", task.getException());
-                            return;
-                        }
-                        // Get new Instance ID token
-                        String token = task.getResult().getToken();
-                        Log.i("kiemtra1", token);
-                        // Log and toast
-                        TokenUser tokenUser1 = new TokenUser(token);
-                        mUsersReference.child("token/" + rootEmail).setValue(tokenUser1);
-                    }
-                });
-
-        mViewPager.setOffscreenPageLimit(3);
     }
-
 
     private void checkAdmin() {
         SharedPreferences sharedPreferences = getSharedPreferences("com.ducluanxutrieu.quanlynhanvien", 0);
-        rootEmail = sharedPreferences.getString("email", ".").replace(".", "");
-        DatabaseReference oneItemValue = mUsersReference.child("user" + "/" + rootEmail);
+        rootEmailWithoutDot = sharedPreferences.getString("email", null);
+        Log.i("USERSTATE", "checkAdmin1");
+        if (rootEmailWithoutDot != null){
+            rootEmailWithoutDot = rootEmailWithoutDot.replace(".", "");
+        } else {
+            return;
+        }
+        Log.i("USERSTATE", "checkAdmin2");
+        DatabaseReference oneItemValue = mUsersReference.child("user" + "/" + rootEmailWithoutDot);
         oneItemValue.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Users userAdmin = dataSnapshot.getValue(Users.class);
                 isUserAdmin = userAdmin.isAdmin();
-                if (isUserAdmin){
+                if (isUserAdmin) {
                     mViewPagerAdapter.addFragment(new StaffListFragment(), getString(R.string.staff_list));
-                }
-                mViewPager.setAdapter(mViewPagerAdapter);
-                mTabLayout.setupWithViewPager(mViewPager);
-                mTabLayout.getTabAt(0).setIcon(R.drawable.avatar);
-                mTabLayout.getTabAt(1).setIcon(R.drawable.list);
-                if (mViewPagerAdapter.getCount() == 3) {
+                    mViewPagerAdapter.addFragment(new RequestListFragment(), getString(R.string.request_list));
+                    mViewPagerAdapter.notifyDataSetChanged();
+                    mTabLayout.getTabAt(0).setIcon(R.drawable.avatar);
+                    mTabLayout.getTabAt(1).setIcon(R.drawable.list);
                     mTabLayout.getTabAt(2).setIcon(R.drawable.staff);
+                    mViewPager.setOffscreenPageLimit(3);
+                }else {
+                    mTabLayout.getTabAt(0).setIcon(R.drawable.avatar);
+                    mTabLayout.getTabAt(1).setIcon(R.drawable.list);
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mFirebaseAuth.removeAuthStateListener(mAuthStateListener);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mFirebaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     @Override
@@ -174,12 +175,21 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.sign_out: {
                 mFirebaseAuth.signOut();
-                mFireUser.signOut();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
                 finish();
+                break;
+            }
+
+            case R.id.change_password: {
+                ChangePassword changePassword = new ChangePassword();
+                changePassword.show(getSupportFragmentManager(), "ChangePassword");
+                break;
+            }
+            case R.id.ask_for_day_off: {
+                Intent intent = new Intent(MainActivity.this, AskOffDayActivity.class);
                 startActivity(intent);
             }
-            break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -197,13 +207,14 @@ public class MainActivity extends AppCompatActivity
                         public void run() {
                             FirebaseUser user = mAuth.getCurrentUser();
                             UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder().setDisplayName(name).build();
-                            user.updateProfile(profileUpdate);
-                            String uid = user.getUid();
-                            Users users = new Users(name, email, password, phone, position, uid, false);
-                            String emailChange = email.replace(".", "");
-                            mUsersReference.child("user/" + emailChange).setValue(users);
-                            //Toast.makeText(MainActivity.this, getString(R.string.add_new_member_complete), Toast.LENGTH_LONG).show();
-                            mFirebaseAuth = mFireUser;
+                            if (user != null) {
+                                user.updateProfile(profileUpdate);
+                                String uid = user.getUid();
+                                Users users = new Users(name, email, password, phone, position, uid, false);
+                                String emailChange = email.replace(".", "");
+                                mUsersReference.child("user/" + emailChange).setValue(users);
+                            }
+                            signInAgain();
                         }
                     }).start();
                 } else {
@@ -217,7 +228,7 @@ public class MainActivity extends AppCompatActivity
     public void onTransferSignal(String signalMessage, String message) {
         if (signalMessage.equals("AddFriend")){
                 final String emailInput = message.replace(".", "");
-                final String rootEmail = mFireUser.getCurrentUser().getEmail().replace(".", "");
+                final String rootEmail = mFireUser.getEmail().replace(".", "");
                 checkFriendAlreadyExist(rootEmail, emailInput);
                 if (!userAlreadyFriend) {
                     try {
@@ -254,17 +265,21 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public void onTransferTask(String title, String content) {
+       TasksFragment tasksFragment = (TasksFragment) mViewPagerAdapter.getItem(1);
+       tasksFragment.addNewTask(title,content);
+    }
+
     private void checkFriendAlreadyExist(String rootEmail, String s1) {
         try {
             mFriendReference.child("friend_ship/" + rootEmail + "/" + s1).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Friend friend = dataSnapshot.getValue(Friend.class);
-                    if (friend == null) {
-                        userAlreadyFriend = false;
-                    } else {
-                        userAlreadyFriend = true;
-                    }
+
+                    //userAlready = false if friend == null
+                    userAlreadyFriend = friend != null;
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -274,6 +289,15 @@ public class MainActivity extends AppCompatActivity
         }catch (Exception e){
             e.printStackTrace();
             userAlreadyFriend = false;
+        }
+    }
+    private void signInAgain() {
+        SharedPreferences sharedPreferences = getSharedPreferences("com.ducluanxutrieu.quanlynhanvien", 0);
+        String email = sharedPreferences.getString("email", null);
+        String password = sharedPreferences.getString("password", null);
+
+        if (email != null && password != null) {
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password);
         }
     }
 }

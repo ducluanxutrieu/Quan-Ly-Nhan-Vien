@@ -4,6 +4,7 @@ public class MessageItem {
     private String text;
     private String name;
     private String photoUrl;
+    private String messageID;
 
     public MessageItem() {
     }
@@ -36,5 +37,13 @@ public class MessageItem {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getMessageID() {
+        return messageID;
+    }
+
+    public void setMessageID(String messageID) {
+        this.messageID = messageID;
     }
 }

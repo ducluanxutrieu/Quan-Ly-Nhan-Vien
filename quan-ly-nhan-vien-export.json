@@ -1,0 +1,475 @@
+{
+  "friend_ship" : {
+    "admin@gmailcom" : {
+      "test4@gmailcom" : {
+        "email" : "test4@gmail.com",
+        "name" : "test4",
+        "recentMessage" : "",
+        "uid" : "EDKxjpT7wPU3iEx9p9BiRojyGB82"
+      },
+      "test@gmailcom" : {
+        "email" : "test@gmail.com",
+        "name" : "test",
+        "recentMessage" : "",
+        "uid" : "mUKDh3rIteMDj6C6hdkUwUex01M2"
+      }
+    },
+    "test4@gmailcom" : {
+      "admin@gmailcom" : {
+        "email" : "admin@gmail.com",
+        "name" : "Admin",
+        "recentMessage" : "",
+        "uid" : "oRlIwR6o1We19VBEvDVpDGbtQ9u1"
+      },
+      "test3@gmailcom" : {
+        "email" : "test3@gmail.com",
+        "name" : "test3",
+        "recentMessage" : "",
+        "uid" : "83VmE4Rsi0YKJc4ImFzB49Nna4t2"
+      },
+      "test@gmailcom" : {
+        "email" : "test@gmail.com",
+        "name" : "test",
+        "recentMessage" : "",
+        "uid" : "mUKDh3rIteMDj6C6hdkUwUex01M2"
+      }
+    },
+    "test@gmailcom" : {
+      "test4@gmailcom" : {
+        "email" : "test4@gmail.com",
+        "name" : "test4",
+        "recentMessage" : "",
+        "uid" : "EDKxjpT7wPU3iEx9p9BiRojyGB82"
+      }
+    }
+  },
+  "message" : {
+    "admin@gmailcom" : {
+      "test4@gmailcom" : {
+        "-LZcvrwQ8_D65GuiIETB" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "sad"
+        },
+        "-LZcvspzAqT7OoC-fzcE" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "djsd"
+        },
+        "-LZcyrm3nXEY_FmQdRcQ" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hhh"
+        },
+        "-LZd8ikZ35BPN5BkL21I" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "jsjs"
+        },
+        "-LZd8ioQ3gfuzwJKeMvy" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "fdafdaf"
+        },
+        "-LZd8jd7uM3ce5muI5Fd" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "ndnnd"
+        },
+        "-LZd8knlxau-7LpbACih" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hhhj"
+        },
+        "-LZd9c-86zkBKaBQtpCa" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "bânn"
+        },
+        "-LZd9cOrakkRG0pdnlKE" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "baban"
+        },
+        "-LZd9cecGz1_WgWtnwgN" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "baba"
+        },
+        "-LZd9cvi8tS7nbM6FR01" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hân"
+        },
+        "-LZd9ihYbIKKwzNMonOv" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hshshs"
+        },
+        "-LZd9ixe0QpbYjwdZVxi" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "bsnsn"
+        },
+        "-LZd9jBFFlJdkorTk7-_" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hsnns"
+        },
+        "-LZd9jPsarkwuIB47R1P" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "nsns"
+        },
+        "-LZd9sfRf3NoRvvghkdI" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "jjjjjj"
+        },
+        "-LZd9u0peGSrI0Lu1AQR" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "jjjj"
+        },
+        "-LZdFzlyzi09dD3Ylgwd" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "habsb"
+        },
+        "-LZdG0YgJnLrZuMs7jw2" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "bshsh"
+        },
+        "-LZdG27MM7YJZq8ZNB7Z" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hhb"
+        },
+        "-LZdG34IZCzBINDo9DM8" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "nnnobnj"
+        }
+      }
+    },
+    "test4@gmailcom" : {
+      "admin@gmailcom" : {
+        "-LZcvrwQ8_D65GuiIETB" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "sad"
+        },
+        "-LZcvspzAqT7OoC-fzcE" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "djsd"
+        },
+        "-LZcyrm3nXEY_FmQdRcQ" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hhh"
+        },
+        "-LZd8ikZ35BPN5BkL21I" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "jsjs"
+        },
+        "-LZd8ioQ3gfuzwJKeMvy" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "fdafdaf"
+        },
+        "-LZd8jd7uM3ce5muI5Fd" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "ndnnd"
+        },
+        "-LZd8knlxau-7LpbACih" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hhhj"
+        },
+        "-LZd9c-86zkBKaBQtpCa" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "bânn"
+        },
+        "-LZd9cOrakkRG0pdnlKE" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "baban"
+        },
+        "-LZd9cecGz1_WgWtnwgN" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "baba"
+        },
+        "-LZd9cvi8tS7nbM6FR01" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hân"
+        },
+        "-LZd9ihYbIKKwzNMonOv" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hshshs"
+        },
+        "-LZd9ixe0QpbYjwdZVxi" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "bsnsn"
+        },
+        "-LZd9jBFFlJdkorTk7-_" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hsnns"
+        },
+        "-LZd9jPsarkwuIB47R1P" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "nsns"
+        },
+        "-LZd9sfRf3NoRvvghkdI" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "jjjjjj"
+        },
+        "-LZd9u0peGSrI0Lu1AQR" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "jjjj"
+        },
+        "-LZdFzlyzi09dD3Ylgwd" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "habsb"
+        },
+        "-LZdG0YgJnLrZuMs7jw2" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "bshsh"
+        },
+        "-LZdG27MM7YJZq8ZNB7Z" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "hhb"
+        },
+        "-LZdG34IZCzBINDo9DM8" : {
+          "name" : "admin",
+          "photoUrl" : "a",
+          "text" : "nnnobnj"
+        }
+      },
+      "test@gmailcom" : {
+        "-LZcc1mDfFgtlwVznoyK" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "hghk"
+        },
+        "-LZcc2BrI2OD79Ph_755" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "vkb"
+        },
+        "-LZcc4Cwm9Wna56voqIi" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "fddc"
+        },
+        "-LZcc5aGwFfGZ8h_CuA5" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "fgggg"
+        },
+        "-LZcc6clLShw7QkZoCst" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "xxx"
+        },
+        "-LZcc9othimziKc-BuxT" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "gfss"
+        },
+        "-LZccAvh3gH6mrjRkjcy" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "sss"
+        },
+        "-LZcdAwLVjNBIYTzmk0F" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "hzjsjs"
+        },
+        "-LZcdBG5vOSR24St1KEo" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "bsbs"
+        },
+        "-LZcdBagoxvFop2Hbtzo" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "br r"
+        },
+        "-LZcdC5bbH0vAA4Y_LjI" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "bb"
+        },
+        "-LZciJPYe8z5Q4hnErfA" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "gxhv"
+        },
+        "-LZciJxtt6hMhe0nwgcj" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "jkvc"
+        }
+      }
+    },
+    "test@gmailcom" : {
+      "test4@gmailcom" : {
+        "-LZcc1mDfFgtlwVznoyK" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "hghk"
+        },
+        "-LZcc2BrI2OD79Ph_755" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "vkb"
+        },
+        "-LZcc4Cwm9Wna56voqIi" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "fddc"
+        },
+        "-LZcc5aGwFfGZ8h_CuA5" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "fgggg"
+        },
+        "-LZcc6clLShw7QkZoCst" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "xxx"
+        },
+        "-LZcc9othimziKc-BuxT" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "gfss"
+        },
+        "-LZccAvh3gH6mrjRkjcy" : {
+          "name" : "test4",
+          "photoUrl" : "a",
+          "text" : "sss"
+        },
+        "-LZcdAwLVjNBIYTzmk0F" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "hzjsjs"
+        },
+        "-LZcdBG5vOSR24St1KEo" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "bsbs"
+        },
+        "-LZcdBagoxvFop2Hbtzo" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "br r"
+        },
+        "-LZcdC5bbH0vAA4Y_LjI" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "bb"
+        },
+        "-LZciJPYe8z5Q4hnErfA" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "gxhv"
+        },
+        "-LZciJxtt6hMhe0nwgcj" : {
+          "name" : "test",
+          "photoUrl" : "a",
+          "text" : "jkvc"
+        }
+      }
+    }
+  },
+  "token" : {
+    "admin@gmailcom" : {
+      "tokenU" : "cdO3gWWYJ5U:APA91bEvdsbpbKptK4gDYU_eZUBmbmbC6I9wklmnSaCWcQn25QTgPHjhC07N3QcOaBB5ZzTwOLo_ZKtDtwCCEFeeliiKcDr4UeYE-tnqaAV_1qPKblitXhyU1TAzgq_ObhHHxVdj1AdD"
+    },
+    "test1@gmailcom" : {
+      "tokenU" : "cdO3gWWYJ5U:APA91bEvdsbpbKptK4gDYU_eZUBmbmbC6I9wklmnSaCWcQn25QTgPHjhC07N3QcOaBB5ZzTwOLo_ZKtDtwCCEFeeliiKcDr4UeYE-tnqaAV_1qPKblitXhyU1TAzgq_ObhHHxVdj1AdD"
+    },
+    "test2@gmailcom" : {
+      "tokenU" : "cdO3gWWYJ5U:APA91bEvdsbpbKptK4gDYU_eZUBmbmbC6I9wklmnSaCWcQn25QTgPHjhC07N3QcOaBB5ZzTwOLo_ZKtDtwCCEFeeliiKcDr4UeYE-tnqaAV_1qPKblitXhyU1TAzgq_ObhHHxVdj1AdD"
+    },
+    "test4@gmailcom" : {
+      "tokenU" : "fo-svlBhIIE:APA91bGjwbVTjC9tIqr1XXACxxrg-jab43ZOcYnah-ogejMWCEezZUoRyDr9ICamLvard4Vcj3xYRFmQ36k2O9gr4bepnCE05Fk4wH9QDf-bvzBA6DX3AL-YG89fmtNYS33_srzwRrgQ"
+    },
+    "test@gmailcom" : {
+      "tokenU" : "cdO3gWWYJ5U:APA91bEvdsbpbKptK4gDYU_eZUBmbmbC6I9wklmnSaCWcQn25QTgPHjhC07N3QcOaBB5ZzTwOLo_ZKtDtwCCEFeeliiKcDr4UeYE-tnqaAV_1qPKblitXhyU1TAzgq_ObhHHxVdj1AdD"
+    }
+  },
+  "user" : {
+    "admin@gmailcom" : {
+      "admin" : true,
+      "email" : "admin@gmail.com",
+      "name" : "Admin",
+      "password" : "123456789",
+      "phone" : "admin",
+      "position" : "admin",
+      "uid" : "oRlIwR6o1We19VBEvDVpDGbtQ9u1"
+    },
+    "test1@gmailcom" : {
+      "admin" : false,
+      "email" : "test1@gmail.com",
+      "name" : "test1",
+      "password" : "123456",
+      "phone" : "123456",
+      "position" : "staff",
+      "uid" : "QL6KJf7rSJPXvdZC5NPBnzN4C063"
+    },
+    "test2@gmailcom" : {
+      "admin" : false,
+      "email" : "test2@gmail.com",
+      "name" : "test2",
+      "password" : "123456",
+      "phone" : "123456",
+      "position" : "Văn phòng",
+      "uid" : "i6ZskVTiaRg6XyGlBiIwR4OujTM2"
+    },
+    "test3@gmailcom" : {
+      "admin" : false,
+      "email" : "test3@gmail.com",
+      "name" : "test3",
+      "password" : "123456",
+      "phone" : "123456",
+      "position" : "test",
+      "uid" : "83VmE4Rsi0YKJc4ImFzB49Nna4t2"
+    },
+    "test4@gmailcom" : {
+      "admin" : false,
+      "email" : "test4@gmail.com",
+      "name" : "test4",
+      "password" : "123456",
+      "phone" : "123456",
+      "position" : "IT",
+      "uid" : "EDKxjpT7wPU3iEx9p9BiRojyGB82"
+    },
+    "test@gmailcom" : {
+      "admin" : false,
+      "email" : "test@gmail.com",
+      "name" : "test",
+      "password" : "123456",
+      "phone" : "123456",
+      "position" : "staff",
+      "uid" : "mUKDh3rIteMDj6C6hdkUwUex01M2"
+    }
+  }
+}

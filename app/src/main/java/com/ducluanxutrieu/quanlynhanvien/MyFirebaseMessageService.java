@@ -1,9 +1,12 @@
 package com.ducluanxutrieu.quanlynhanvien;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -17,7 +20,6 @@ public class MyFirebaseMessageService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String s) {
         super.onNewToken(s);
-        Log.i("tokentoken1", s);
 
     }
 
@@ -25,19 +27,15 @@ public class MyFirebaseMessageService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         if (remoteMessage == null) return;
         Log.d(TAG, "From: " + remoteMessage.getFrom());
-
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Notification body: " + remoteMessage.getNotification().getBody());
-            hanldeNotification(remoteMessage.getNotification().getBody());
+        if (remoteMessage.getData() != null) {
+            String s1 = remoteMessage.getData().get("title");
+            String s2 = remoteMessage.getData().get("message");
+            Log.i("NOTIF", s1 + "|" + s2);
+            hanldeNotification( s1, s2);
         }
-
-        if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Data payload: " + remoteMessage.getData().toString());
-        }
-
     }
 
-    private void hanldeNotification(String messege) {
-        PushNotificationManager.getInstance().generateNotification(messege, MainActivity.class);
+    private void hanldeNotification(String title, String message) {
+        PushNotificationManager.getInstance().generateNotification(title, message, MainActivity.class);
     }
 }

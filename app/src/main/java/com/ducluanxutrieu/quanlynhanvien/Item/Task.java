@@ -22,4 +22,11 @@ public class Task implements Serializable {
         return taskTitle;
     }
 
+    public void setTaskContent(String taskContent) {
+        this.taskContent = taskContent;
+    }
+
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
 }
