@@ -14,14 +14,17 @@ import android.view.ViewGroup;
 
 import com.ducluanxutrieu.quanlynhanvien.Adapter.FriendsListAdapter;
 import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewFriend;
-import com.ducluanxutrieu.quanlynhanvien.Item.Friend;
+import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
+import com.ducluanxutrieu.quanlynhanvien.Models.MessageItem;
 import com.ducluanxutrieu.quanlynhanvien.R;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +39,7 @@ public class FriendsListFragment extends Fragment {
 
     List<Friend> friendList;
     FriendsListAdapter mFriendsAdapter;
-
+    String rootEmail;
 
     public FriendsListFragment() {
     }
@@ -56,6 +59,17 @@ public class FriendsListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         friendList = new ArrayList<>();
+
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("friend_ship/" + rootEmail)
+                .limitToLast(50);
+        FirebaseRecyclerOptions<MessageItem> options =
+                new FirebaseRecyclerOptions.Builder<MessageItem>()
+                        .setQuery(query, MessageItem.class)
+                        .build();
+
         mFriendsAdapter = new FriendsListAdapter(friendList, view.getContext());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerViewFriends.setLayoutManager(layoutManager);
@@ -70,7 +84,9 @@ public class FriendsListFragment extends Fragment {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseAuth = FirebaseAuth.getInstance();
-        String rootEmail = mFirebaseAuth.getCurrentUser().getEmail().replace(".", "");
+
+        rootEmail = mFirebaseAuth.getCurrentUser().getEmail().replace(".", "");
+
         mDatabaseReference = mFirebaseDatabase.getReference().child("friend_ship/" + rootEmail);
         attachDatabaseReadListener();
     }

@@ -30,19 +30,20 @@
         android:layout_marginEnd="@dimen/margin_vertical"
         >
         <TextView
-            android:id="@+id/position_staff"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical"
-            />
-        <TextView
             android:id="@+id/staff_name"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_gravity="center_vertical"
             />
+        <TextView
+            android:id="@+id/position_staff"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            />
+
     </LinearLayout>
 </LinearLayout>
 </android.support.v7.widget.CardView>

@@ -8,15 +8,21 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.ducluanxutrieu.quanlynhanvien.Interface.TransferTask;
-import com.ducluanxutrieu.quanlynhanvien.Item.Task;
+import com.ducluanxutrieu.quanlynhanvien.Models.Task;
 import com.ducluanxutrieu.quanlynhanvien.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class TaskDetailActivity extends AppCompatActivity {
     private EditText inputTitleTask, inputContentTask;
     private Button btnCancel, btnSave;
-    private TransferTask transferTask;
+
+    String email;
+    Task task;
+    String keyTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,10 +31,16 @@ public class TaskDetailActivity extends AppCompatActivity {
         mapping();
 
         Intent intent = getIntent();
-        final Task task = (Task) intent.getSerializableExtra("task");
-        inputTitleTask.setText(task.getTaskTitle());
-        inputContentTask.setText(task.getTaskContent());
+        final String signal = intent.getStringExtra("signal");
 
+        email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+
+        if (signal.equals("edit")) {
+            task = (Task) intent.getSerializableExtra("task");
+            keyTask = intent.getStringExtra("key");
+            inputTitleTask.setText(task.getTaskTitle());
+            inputContentTask.setText(task.getTaskContent());
+        }
         inputTitleTask.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -56,8 +68,21 @@ public class TaskDetailActivity extends AppCompatActivity {
                 String title = inputTitleTask.getText().toString();
                 String content = inputContentTask.getText().toString();
                 if (!title.isEmpty() && !content.isEmpty()) {
-                    task.setTaskTitle(title);
-                    task.setTaskContent(content);
+                    if (task == null) {
+                        task = new Task(title, content);
+                    } else {
+                        task.setTaskTitle(title);
+                        task.setTaskContent(content);
+                    }
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("task/" + email.replace(".", ""));
+                    if (signal.equals("add")){
+                        reference.push().setValue(task);
+                        Toast.makeText(TaskDetailActivity.this, "Add new task successful", Toast.LENGTH_SHORT).show();
+                    }else {
+                        reference.child(keyTask).setValue(task);
+                        Toast.makeText(TaskDetailActivity.this, "Update task successful", Toast.LENGTH_SHORT).show();
+
+                    }
                 }
             }
         });
@@ -65,7 +90,7 @@ public class TaskDetailActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                finish();
             }
         });
     }

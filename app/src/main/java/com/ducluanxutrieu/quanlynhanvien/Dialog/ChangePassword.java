@@ -10,13 +10,12 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
-import com.ducluanxutrieu.quanlynhanvien.Item.Users;
+import com.ducluanxutrieu.quanlynhanvien.Models.Users;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -127,7 +126,7 @@ public class ChangePassword extends DialogFragment {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-                                                Toast.makeText(view.getContext(), getString(R.string.update_password_successful), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(view.getContext(), getString(R.string.update_user_successful), Toast.LENGTH_SHORT).show();
                                                 users.setPassword(newPassword.getText().toString());
                                                 mReference.setValue(users);
                                                 dismiss();

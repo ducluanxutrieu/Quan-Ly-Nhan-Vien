@@ -1,6 +1,7 @@
 package com.ducluanxutrieu.quanlynhanvien.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,11 +13,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ducluanxutrieu.quanlynhanvien.Activity.EditUserActivity;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.StaffListAdapter;
-import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewAccount;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Item.Users;
+import com.ducluanxutrieu.quanlynhanvien.Models.Users;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,7 +39,8 @@ public class StaffListFragment extends Fragment {
     private DatabaseReference mUsersReference;
     private ChildEventListener mChildEvenListener;
 
-    public StaffListFragment(){};
+    public StaffListFragment(){}
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,8 +50,9 @@ public class StaffListFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddNewAccount mAddNewAccountDialog = new AddNewAccount();
-                mAddNewAccountDialog.show(getFragmentManager(), "dialog");
+                Intent intent = new Intent(view.getContext(), EditUserActivity.class);
+                intent.putExtra("signal", "create");
+                startActivity(intent);
             }
         });
 

@@ -8,8 +8,8 @@
     <dimen name="avatar_size">@dimen/_30sdp</dimen>
     <dimen name="margin_vertical">10dp</dimen>
     <dimen name="width_input_dialog">150dp</dimen>
-    <dimen name="margin_top_item">@dimen/_5sdp</dimen>
-    <dimen name="send_button_size">40dp</dimen>
+    <dimen name="margin_item">@dimen/_5sdp</dimen>
+    <dimen name="send_button_size">50dp</dimen>
     <dimen name="app_bar_height">200dp</dimen>
     <dimen name="text_size">25sp</dimen>
     <dimen name="margin_horizontal_message">100dp</dimen>

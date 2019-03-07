@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.ducluanxutrieu.quanlynhanvien.Item.MessageItem;
+import com.ducluanxutrieu.quanlynhanvien.Models.MessageItem;
 import com.ducluanxutrieu.quanlynhanvien.R;
 
 import java.util.List;

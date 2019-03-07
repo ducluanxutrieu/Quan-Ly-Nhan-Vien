@@ -1,9 +1,6 @@
 package com.ducluanxutrieu.quanlynhanvien.Activity;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -16,15 +13,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Adapter.MessageAdapter;
-import com.ducluanxutrieu.quanlynhanvien.Item.ChatID;
-import com.ducluanxutrieu.quanlynhanvien.Item.Friend;
-import com.ducluanxutrieu.quanlynhanvien.Item.MessageItem;
+import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
+import com.ducluanxutrieu.quanlynhanvien.Models.MessageItem;
+import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Item.TokenUser;
-import com.google.android.gms.auth.GoogleAuthUtil;
+import com.ducluanxutrieu.quanlynhanvien.Models.TokenUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -33,25 +28,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.RemoteMessage;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ChatsActivity extends AppCompatActivity {
     RecyclerView mChatRecyclerView;
@@ -60,6 +41,7 @@ public class ChatsActivity extends AppCompatActivity {
     MessageAdapter mMessageAdapter;
     List<MessageItem> mMessageItems;
 
+    //Firebase
     FirebaseDatabase mMessageFireDatabase;
     DatabaseReference mMessageReferenceSend;
     DatabaseReference mMessageReferenceReceive;
@@ -67,12 +49,12 @@ public class ChatsActivity extends AppCompatActivity {
     FirebaseMessaging mFirebaseMessage;
     FirebaseAuth mMessageFireAuth;
     FirebaseUser mUserFire;
+    FirebaseFunctions mFunctions;
+
     Friend friend;
     String rootName;
-    String chatIDWith;
 
     private static String token;
-    public static String TAG = ".ChatsActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +68,7 @@ public class ChatsActivity extends AppCompatActivity {
         mMessageFireDatabase = FirebaseDatabase.getInstance();
         mMessageFireAuth = FirebaseAuth.getInstance();
         mFirebaseMessage = FirebaseMessaging.getInstance();
+        mFunctions = FirebaseFunctions.getInstance();
         mUserFire = mMessageFireAuth.getCurrentUser();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -97,10 +80,11 @@ public class ChatsActivity extends AppCompatActivity {
         mMessageAdapter = new MessageAdapter(mMessageItems, rootName);
         mChatRecyclerView.setAdapter(mMessageAdapter);
 
-        //findChatID();
-
         mMessageReferenceSend = mMessageFireDatabase.getReference().child("message" + "/" + mUserFire.getEmail().replace(".", "") + "/" + friend.getEmail().replace(".", ""));
         mMessageReferenceReceive = mMessageFireDatabase.getReference().child("message" + "/" + friend.getEmail().replace(".", "") + "/" + mUserFire.getEmail().replace(".", ""));
+        final DatabaseReference referenceSend = mMessageFireDatabase.getReference().child("friend_ship/" + "/" + mUserFire.getEmail().replace(".", "") + "/" + friend.getEmail().replace(".", ""));
+        final DatabaseReference referenceReceive = mMessageFireDatabase.getReference().child("friend_ship" + "/" + friend.getEmail().replace(".", "") + "/" + mUserFire.getEmail().replace(".", ""));
+
         attachDatabaseReadListener();
 
         mInputChatEditText.addTextChangedListener(new TextWatcher() {
@@ -131,6 +115,12 @@ public class ChatsActivity extends AppCompatActivity {
                 String mPushKey = mMessageReferenceSend.push().getKey();
                 mMessageReferenceSend.child(mPushKey).setValue(messageItem);
                 mMessageReferenceReceive.child(mPushKey).setValue(messageItem);
+                Friend root = new Friend(mUserFire.getDisplayName(), mUserFire.getEmail(), mUserFire.getUid(), mInputChatEditText.getText().toString());
+
+                friend.setRecentMessage(mInputChatEditText.getText().toString());
+                referenceSend.setValue(friend);
+                referenceReceive.setValue(root);
+
                 pushNoti();
                 mInputChatEditText.setText("");
             }
@@ -139,64 +129,15 @@ public class ChatsActivity extends AppCompatActivity {
         getToken();
     }
 
-     private void pushNoti() {
-        AsyncTask<String, Void ,String> task = new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... strings) {
-                String BASE_URL = strings[0];
-                String query = strings[1];
-                StringBuilder result = new StringBuilder();
-                try {
-                    URL url = new URL(BASE_URL);
-                    HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-                    httpCon.setDoOutput(true);
-                    httpCon.setDoInput(true);
-                    httpCon.setRequestMethod("POST");
-                    httpCon.setRequestProperty("Accept", "application/json");
-                    httpCon.setRequestProperty("Content-Type", "application/json");
-
-                    OutputStream os = httpCon.getOutputStream();
-                    OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
-                    osw.write(query);
-                    osw.flush();
-                    osw.close();
-                    os.close();  //don't forget to close the OutputStream
-                    httpCon.connect();
-
-                    //read the inputstream and print it
-                    InputStream inputStream = httpCon.getInputStream();
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                    String line = "";
-
-                    //send message result
-                    while((line = bufferedReader.readLine()) != null) {
-                        result.append(line);
-                    }
-                    bufferedReader.close();
-                    inputStreamReader.close();
-                    inputStream.close();
-                    System.out.println(result.toString());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return result.toString();
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                Toast.makeText(ChatsActivity.this, s, Toast.LENGTH_SHORT).show();
-            }
-        };
+    private void pushNoti() {
+        MyTask task = new MyTask(ChatsActivity.this);
 
         final String BASE_URL = "https://quan-ly-nhan-vien.firebaseapp.com/api";
+        //final String BASE_URL = "http://localhost:5000/api";
         String name = rootName;
         String message = mInputChatEditText.getText().toString();
         String to = token;
-        //{"data":{"title":"luanxx","message":"cac"},"to":"ejgJWQ"}
+        //{"data":{"title":"luanxx","message":"cac","bac":"cac"},"to":"ejgJWQ"}
         String query = "{\"data\":{\"title\":\""+name +"\",\"message\":\""+ message + "\"},\"to\":\""+to+"\"}";
         Log.i("QUERY", query);
         task.execute(BASE_URL, query);

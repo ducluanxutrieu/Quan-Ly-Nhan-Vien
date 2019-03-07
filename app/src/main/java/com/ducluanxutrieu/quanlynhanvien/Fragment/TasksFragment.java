@@ -1,6 +1,6 @@
 package com.ducluanxutrieu.quanlynhanvien.Fragment;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,15 +8,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.ducluanxutrieu.quanlynhanvien.Activity.TaskDetailActivity;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.TaskAdapter;
-import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewTask;
-import com.ducluanxutrieu.quanlynhanvien.Item.Task;
+import com.ducluanxutrieu.quanlynhanvien.Models.Task;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -64,8 +63,9 @@ public class TasksFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddNewTask addNewTask = new AddNewTask();
-                addNewTask.show(getFragmentManager(), "NewTask");
+                Intent intent = new Intent(v.getContext(), TaskDetailActivity.class);
+                intent.putExtra("signal", "add");
+                startActivity(intent);
             }
         });
 
@@ -74,9 +74,6 @@ public class TasksFragment extends Fragment {
         mFirebaseUser = mFirebaseAuth.getCurrentUser();
         if (mFirebaseUser != null){
             rootEmail = mFirebaseUser.getEmail().replace(".", "");
-        }else {
-            SharedPreferences sharedPreferences = getContext().getSharedPreferences("com.ducluanxutrieu.quanlynhanvien", 0);
-            rootEmail = sharedPreferences.getString("email", "").replace(".", "");
         }
 
         mDatabaseReference = mFirebaseDatabase.getReference().child("task/" + rootEmail);
@@ -106,7 +103,9 @@ public class TasksFragment extends Fragment {
                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     Task task = dataSnapshot.getValue(Task.class);
                     if (task != null){
+                        task.setKeyTask(dataSnapshot.getKey());
                         taskList.add(task);
+                        //taskList.get(taskList.size() - 1).setKeyTask(dataSnapshot.getKey());
                         mTaskAdapter.notifyItemChanged(taskList.size());
                     }
                 }

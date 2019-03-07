@@ -38,7 +38,7 @@
         <ImageButton
             android:layout_width="@dimen/send_button_size"
             android:layout_height="@dimen/send_button_size"
-            android:src="@drawable/send"
+            android:src="@drawable/ic_menu_send"
             android:id="@+id/send_message_image_button"
             android:scaleType="fitCenter"
             />

@@ -1,6 +1,5 @@
 package com.ducluanxutrieu.quanlynhanvien.Activity;
 
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
@@ -12,12 +11,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Dialog.DatePicker;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
-import com.ducluanxutrieu.quanlynhanvien.Item.RequestItem;
-import com.ducluanxutrieu.quanlynhanvien.Item.TokenUser;
+import com.ducluanxutrieu.quanlynhanvien.Models.RequestItem;
+import com.ducluanxutrieu.quanlynhanvien.Models.TokenUser;
+import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,15 +26,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Calendar;
 
 public class AskOffDayActivity extends AppCompatActivity implements TransferSignal {
@@ -94,18 +84,20 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String content = inputContent.getText().toString();
                 RequestItem requestItem = new RequestItem(
                         date,
                         mFirebaseUser.getDisplayName(),
                         mFirebaseUser.getEmail(),
-                        inputContent.getText().toString(),
+                        content,
                         getTimeNow(),
                         false
                         );
                 DatabaseReference ref = mFireDatabase.getReference().child("day_off/" + mFirebaseUser.getEmail().replace(".", ""));
-                mReference.push().setValue(requestItem);
-                ref.push().setValue(requestItem);
-                pushNoti();
+                requestItem.setRequestKey(mReference.push().getKey());
+                mReference.child(requestItem.getRequestKey()).setValue(requestItem);
+                ref.child(requestItem.getRequestKey()).setValue(requestItem);
+                pushNotification(content);
                 finish();
             }
         });
@@ -157,7 +149,7 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
                 TokenUser tokenUser = dataSnapshot.getValue(TokenUser.class);
                 if (tokenUser != null){
                     token = tokenUser.getTokenU();
-                }else return;
+                }
             }
 
             @Override
@@ -166,67 +158,16 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             }
         });
     }
-    private void pushNoti() {
-        AsyncTask<String, Void ,String> task = new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... strings) {
-                String BASE_URL = strings[0];
-                String query = strings[1];
-                StringBuilder result = new StringBuilder();
-                try {
-                    URL url = new URL(BASE_URL);
-                    HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
-                    httpCon.setDoOutput(true);
-                    httpCon.setDoInput(true);
-                    httpCon.setRequestMethod("POST");
-                    httpCon.setRequestProperty("Accept", "application/json");
-                    httpCon.setRequestProperty("Content-Type", "application/json");
-
-                    OutputStream os = httpCon.getOutputStream();
-                    OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
-                    osw.write(query);
-                    osw.flush();
-                    osw.close();
-                    os.close();  //don't forget to close the OutputStream
-                    httpCon.connect();
-
-                    //read the inputstream and print it
-                    InputStream inputStream = httpCon.getInputStream();
-                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                    String line = "";
-
-                    //send message result
-                    while((line = bufferedReader.readLine()) != null) {
-                        result.append(line);
-                    }
-                    bufferedReader.close();
-                    inputStreamReader.close();
-                    inputStream.close();
-                    System.out.println(result.toString());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return result.toString();
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                Toast.makeText(AskOffDayActivity.this, s, Toast.LENGTH_SHORT).show();
-            }
-        };
+    private void pushNotification(String content) {
+        MyTask myTask = new MyTask(AskOffDayActivity.this);
 
         final String BASE_URL = "https://quan-ly-nhan-vien.firebaseapp.com/api";
-        String name = "@@" + mFirebaseUser.getDisplayName();
-        String message = inputContent.getText().toString();
-        message = choseADay + "| " + message;
+        String title = "@@" + mFirebaseUser.getDisplayName();
+        content = choseADay.getText().toString() + "| " + content;
+        Log.i(".AskOffDay", content);
         String to = token;
-        //{"data":{"title":"luanxx","message":"cac"},"to":"ejgJWQ"}
-        String query = "{\"data\":{\"title\":\""+name +"\",\"message\":\""+ message + "\"},\"to\":\""+to+"\"}";
+        String query = "{\"data\":{\"title\":\""+title +"\",\"message\":\""+ content + "\"},\"to\":\""+to+"\"}";
         Log.i("QUERY", query);
-        task.execute(BASE_URL, query);
+        myTask.execute(BASE_URL, query);
     }
 }
