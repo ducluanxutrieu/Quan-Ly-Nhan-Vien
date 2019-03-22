@@ -16,40 +16,38 @@ import com.bumptech.glide.request.RequestOptions;
 import com.ducluanxutrieu.quanlynhanvien.Activity.ChatsActivity;
 import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
 import com.ducluanxutrieu.quanlynhanvien.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 
-import java.util.List;
+public class FriendsListAdapter extends FirebaseRecyclerAdapter<Friend, FriendsListAdapter.ItemViewHolder> {
 
-public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.ItemViewHolder>{
-    private List<Friend> friendList;
-    private Context context;
-
-
-    public FriendsListAdapter(List<Friend> friendList, Context context) {
-        this.friendList = friendList;
-        this.context = context;
+    public FriendsListAdapter(@NonNull FirebaseRecyclerOptions<Friend> options) {
+        super(options);
     }
+
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.friend_item, viewGroup, false);
+        LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+        View view = inflater.inflate(R.layout.item_friend, viewGroup, false);
 
         return new ItemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ItemViewHolder itemViewHolder, int i) {
-        itemViewHolder.nameMessage.setText(friendList.get(i).getName());
-        itemViewHolder.recentMessage.setText(friendList.get(i).getRecentMessage());
-        Glide.with(context).load(R.drawable.avatar).apply(RequestOptions.circleCropTransform()).into(itemViewHolder.avatar);
+    protected void onBindViewHolder(@NonNull ItemViewHolder holder, int position, @NonNull final Friend model) {
+        holder.setNameMessage(model.getName());
+        holder.setRecentMessage(model.getRecentMessage());
+        holder.setAvatar();
+        Glide.with(holder.itemView.getContext()).load(model.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(holder.avatar);
 
-        itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
                 Intent intent = new Intent(context, ChatsActivity.class);
-                intent.putExtra("friend", friendList.get(itemViewHolder.getAdapterPosition()));
+                intent.putExtra("friend", model);
                 ActivityOptions options =
                         ActivityOptions.makeCustomAnimation(context, R.anim.fui_slide_in_right, R.anim.fui_slide_out_left);
                 context.startActivity(intent, options.toBundle());
@@ -57,20 +55,28 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return friendList.size();
-    }
-
     class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView nameMessage;
         TextView recentMessage;
         ImageView avatar;
+        View view;
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameMessage = itemView.findViewById(R.id.friend_name);
-            recentMessage = itemView.findViewById(R.id.recent_chat);
-            avatar = itemView.findViewById(R.id.avatar);
+            view = itemView;
+        }
+
+        void setNameMessage(String name) {
+            nameMessage = view.findViewById(R.id.friend_name);
+            nameMessage.setText(name);
+        }
+
+        void setRecentMessage(String recent) {
+            recentMessage = view.findViewById(R.id.recent_chat);
+            recentMessage.setText(recent);
+        }
+
+        void setAvatar() {
+            avatar = view.findViewById(R.id.avatar);
         }
     }
 }

@@ -1,98 +1,98 @@
 package com.ducluanxutrieu.quanlynhanvien.Adapter;
 
 import android.app.ActivityOptions;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.ducluanxutrieu.quanlynhanvien.Activity.UserInfoActivity;
+import com.ducluanxutrieu.quanlynhanvien.Models.Users;
 import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Models.Users;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private List<Users> usersList;
-    public Context context;
 
-    public StaffListAdapter(ArrayList<Users> usersList, Context context){
-        this.usersList = usersList;
-        this.context = context;
+public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAdapter.ItemViewHolder> {
+    private View rootView;
+
+    public StaffListAdapter(@NonNull FirebaseRecyclerOptions<Users> options) {
+        super(options);
     }
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view = inflater.inflate(R.layout.staff_item, viewGroup, false);
-        return new ItemViewHolder(view);
+        rootView = inflater.inflate(R.layout.item_staff, viewGroup, false);
+        return new ItemViewHolder(rootView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
-        final ItemViewHolder itemViewHolder = (ItemViewHolder) viewHolder;
-        final int pos = itemViewHolder.getAdapterPosition();
-        itemViewHolder.name.setText(usersList.get(i).getName());
-        itemViewHolder.possition.setText(usersList.get(i).getPosition());
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+    protected void onBindViewHolder(@NonNull final ItemViewHolder holder, final int position, @NonNull final Users model) {
+        holder.name.setText(model.getName());
+        holder.position.setText(model.getPosition());
+        Glide.with(rootView).load(model.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(holder.avatar);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
                 Intent intent = new Intent(context, UserInfoActivity.class);
-                intent.putExtra("user", usersList.get(itemViewHolder.getAdapterPosition()));
+                intent.putExtra("user", model);
+                intent.putExtra("isAdmin", true);
                 ActivityOptions options =
                         ActivityOptions.makeCustomAnimation(context, R.anim.fui_slide_in_right, R.anim.fui_slide_out_left);
                 context.startActivity(intent, options.toBundle());
             }
         });
 
-        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setTitle("Delete this account!")
+                builder.setTitle(rootView.getContext().getString(R.string.delete_this_account))
                         .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setMessage("Are you sure delete this account, can not restore when you choose OK")
+                        .setMessage(rootView.getContext().getString(R.string.are_you_sure_delete_this_account))
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                deleteUserFromAuth(usersList.get(pos).getUid());
-                                deleteUserFromDatabase(usersList.get(pos).getEmail());
+                                deleteUserFromAuth(model.getUid());
+                                deleteUserFromDatabase(model.getEmail());
                             }
                         })
-                        .setNegativeButton(context.getString(R.string.cancel), null);
+                        .setNegativeButton(rootView.getContext().getString(R.string.cancel), null);
+                builder.create();
                 return true;
             }
         });
     }
 
-    @Override
-    public int getItemCount() {
-        return usersList.size();
-    }
-
-    public class ItemViewHolder extends RecyclerView.ViewHolder {
-        TextView name, possition;
+    class ItemViewHolder extends RecyclerView.ViewHolder {
+        TextView name, position;
+        ImageView avatar;
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            possition = itemView.findViewById(R.id.position_staff);
+            position = itemView.findViewById(R.id.position_staff);
             name = itemView.findViewById(R.id.staff_name);
+            avatar = itemView.findViewById(R.id.avatar);
         }
     }
 
@@ -106,7 +106,7 @@ public class StaffListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         JSONObject jsonObject = new JSONObject(map);
         String query = jsonObject.toString();
         Log.i("QUERY", query);
-        new MyTask(context).execute(BASE_URL, query);
+        new MyTask(rootView.getContext()).execute(BASE_URL, query);
     }
 
     private void deleteUserFromDatabase(String email){

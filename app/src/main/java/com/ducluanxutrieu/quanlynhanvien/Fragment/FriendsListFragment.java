@@ -7,7 +7,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +14,9 @@ import android.view.ViewGroup;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.FriendsListAdapter;
 import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewFriend;
 import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
-import com.ducluanxutrieu.quanlynhanvien.Models.MessageItem;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -35,11 +30,11 @@ public class FriendsListFragment extends Fragment {
     FirebaseAuth mFirebaseAuth;
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mDatabaseReference;
-    ChildEventListener mChildEvenListener;
+    //ChildEventListener mChildEvenListener;
 
     List<Friend> friendList;
     FriendsListAdapter mFriendsAdapter;
-    String rootEmail;
+    String rootUid;
 
     public FriendsListFragment() {
     }
@@ -47,7 +42,7 @@ public class FriendsListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.friends_list_fragment, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_friends_list, container, false);
 
         mRecyclerViewFriends = rootView.findViewById(R.id.recycler_view_friends_list);
         mFAB = rootView.findViewById(R.id.fab_add_friend);
@@ -58,22 +53,16 @@ public class FriendsListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseAuth = FirebaseAuth.getInstance();
+
+        rootUid = mFirebaseAuth.getUid();
+
+        mDatabaseReference = mFirebaseDatabase.getReference().child("friend_ship/" + rootUid);
+
         friendList = new ArrayList<>();
 
 
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("friend_ship/" + rootEmail)
-                .limitToLast(50);
-        FirebaseRecyclerOptions<MessageItem> options =
-                new FirebaseRecyclerOptions.Builder<MessageItem>()
-                        .setQuery(query, MessageItem.class)
-                        .build();
-
-        mFriendsAdapter = new FriendsListAdapter(friendList, view.getContext());
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        mRecyclerViewFriends.setLayoutManager(layoutManager);
-        mRecyclerViewFriends.setAdapter(mFriendsAdapter);
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,48 +70,30 @@ public class FriendsListFragment extends Fragment {
                 addNewFriend.show(getFragmentManager(), "friend");
             }
         });
-
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mFirebaseAuth = FirebaseAuth.getInstance();
-
-        rootEmail = mFirebaseAuth.getCurrentUser().getEmail().replace(".", "");
-
-        mDatabaseReference = mFirebaseDatabase.getReference().child("friend_ship/" + rootEmail);
-        attachDatabaseReadListener();
     }
 
-    private void attachDatabaseReadListener() {
-        if (mChildEvenListener == null){
-            mChildEvenListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    Friend friend = dataSnapshot.getValue(Friend.class);
-                    friendList.add(friend);
-                    Log.i("kiemtra", friendList.get(friendList.size() - 1).toString() + "");
-                    mFriendsAdapter.notifyDataSetChanged();
-                }
+    @Override
+    public void onStart() {
+        super.onStart();
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("friend_ship/" + rootUid)
+                .limitToLast(50);
+        FirebaseRecyclerOptions.Builder<Friend> itemBuilder = new FirebaseRecyclerOptions.Builder<>();
+        itemBuilder.setQuery(query, Friend.class);
+        FirebaseRecyclerOptions<Friend> options = itemBuilder.build();
 
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        //mFriendsAdapter = new FriendsListAdapter(friendList, view.getContext());
+        mFriendsAdapter = new FriendsListAdapter(options);
+        mFriendsAdapter.startListening();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        mRecyclerViewFriends.setLayoutManager(layoutManager);
+        mRecyclerViewFriends.setAdapter(mFriendsAdapter);
+    }
 
-                }
-
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                }
-
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            };
-            mDatabaseReference.addChildEventListener(mChildEvenListener);
-        }
+    @Override
+    public void onStop() {
+        super.onStop();
+        mFriendsAdapter.stopListening();
     }
 }

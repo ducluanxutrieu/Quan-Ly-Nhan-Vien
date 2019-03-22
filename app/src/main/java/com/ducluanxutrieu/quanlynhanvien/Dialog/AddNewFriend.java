@@ -1,6 +1,5 @@
 package com.ducluanxutrieu.quanlynhanvien.Dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,8 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -19,6 +17,7 @@ import com.ducluanxutrieu.quanlynhanvien.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 
 public class AddNewFriend extends DialogFragment {
     TextInputEditText inputEmail;
@@ -31,7 +30,7 @@ public class AddNewFriend extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.add_new_friend_dialog, null, false);
+        View view = inflater.inflate(R.layout.dialog_add_new_friend, null, false);
 
         inputEmail = view.findViewById(R.id.input_email_friend);
         mFirebaseDatabase = FirebaseDatabase.getInstance();

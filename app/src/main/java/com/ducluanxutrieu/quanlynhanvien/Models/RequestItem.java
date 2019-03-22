@@ -9,15 +9,15 @@ public class RequestItem implements Serializable {
     private String time;
     private boolean accept;
     private String requestKey;
-    private String email;
+    private String uid;
 
     public RequestItem() {
     }
 
-    public RequestItem(String date, String name, String email, String content, String time, boolean accept) {
+    public RequestItem(String date, String name, String uid, String content, String time, boolean accept) {
         this.date = date;
         this.name = name;
-        this.email = email;
+        this.uid = uid;
         this.content = content;
         this.accept = accept;
         this.time = time;
@@ -71,12 +71,12 @@ public class RequestItem implements Serializable {
         this.requestKey = requestKey;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUid() {
+        return uid;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
 }

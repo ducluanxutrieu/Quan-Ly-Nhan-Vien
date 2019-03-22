@@ -66,7 +66,7 @@ public class PushNotificationManager {
         createNotificationChannel();
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this.context, CHANNEL_ID);
-        mBuilder.setSmallIcon(R.drawable.ic_stat_ic_notification);
+        mBuilder.setSmallIcon(R.drawable.ic_app_icon);
         mBuilder.setTicker(noticeTitle);
         mBuilder.setContentTitle(title);
         mBuilder.setContentText(notifyMessage);

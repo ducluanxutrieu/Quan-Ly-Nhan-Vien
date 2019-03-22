@@ -25,6 +25,16 @@ public class MyFirebaseMessageService extends FirebaseMessagingService {
         }
     }
 
+    @Override
+    public void onMessageSent(String s) {
+        super.onMessageSent(s);
+    }
+
+    @Override
+    public void onSendError(String s, Exception e) {
+        super.onSendError(s, e);
+    }
+
     private void hanldeNotification(String title, String message) {
         PushNotificationManager.getInstance().generateNotification(title, message, MainActivity.class);
     }

@@ -18,11 +18,9 @@ import com.ducluanxutrieu.quanlynhanvien.Adapter.StaffListAdapter;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.ducluanxutrieu.quanlynhanvien.Models.Users;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,16 +33,12 @@ public class StaffListFragment extends Fragment {
     TransferSignal mTransferSignal;
     private FloatingActionButton fab;
 
-    FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mUsersReference;
-    private ChildEventListener mChildEvenListener;
-
     public StaffListFragment(){}
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View viewInflate = inflater.inflate(R.layout.staff_list_fragment, container, false);
+        final View viewInflate = inflater.inflate(R.layout.fragment_staff_list, container, false);
         mapping(viewInflate);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -63,16 +57,6 @@ public class StaffListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         usersList = new ArrayList<>();
-
-        mRecyclerViewStaff.hasFixedSize();
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-        mRecyclerViewStaff.setLayoutManager(layoutManager);
-        mStaffListAdapter = new StaffListAdapter((ArrayList<Users>) usersList, getContext());
-        mRecyclerViewStaff.setAdapter(mStaffListAdapter);
-
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mUsersReference = mFirebaseDatabase.getReference().child("user");
-        attachDatabaseReadListener();
     }
 
     @Override
@@ -86,41 +70,28 @@ public class StaffListFragment extends Fragment {
         fab = view.findViewById(R.id.fab);
     }
 
-    private void attachDatabaseReadListener() {
-        if (mChildEvenListener == null){
-            mChildEvenListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    Users users = dataSnapshot.getValue(Users.class);
-                    usersList.add(users);
-                    mStaffListAdapter.notifyDataSetChanged();
-                }
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+    @Override
+    public void onStart() {
+        super.onStart();
 
-                }
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+        Query query = FirebaseDatabase.getInstance().getReference().child("users").limitToLast(50);
+        FirebaseRecyclerOptions.Builder<Users> usersBuilder = new FirebaseRecyclerOptions.Builder<>();
+        usersBuilder.setQuery(query, Users.class);
 
-                }
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        FirebaseRecyclerOptions<Users> options = usersBuilder.build();
+        mStaffListAdapter = new StaffListAdapter(options);
 
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+        mStaffListAdapter.startListening();
 
-                }
-            };
-            mUsersReference.addChildEventListener(mChildEvenListener);
-        }
+        mRecyclerViewStaff.hasFixedSize();
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        mRecyclerViewStaff.setLayoutManager(layoutManager);
+        mRecyclerViewStaff.setAdapter(mStaffListAdapter);
     }
 
-    private void detachDatabaseReadListener() {
-        if (mChildEvenListener != null){
-            mUsersReference.removeEventListener(mChildEvenListener);
-            mChildEvenListener = null;
-        }
+    @Override
+    public void onStop() {
+        super.onStop();
+        mStaffListAdapter.stopListening();
     }
-
 }

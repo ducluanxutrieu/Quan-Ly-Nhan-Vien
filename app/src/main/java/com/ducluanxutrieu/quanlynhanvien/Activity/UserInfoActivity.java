@@ -7,11 +7,13 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.ducluanxutrieu.quanlynhanvien.Models.RequestItem;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.ducluanxutrieu.quanlynhanvien.Models.Users;
@@ -25,9 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserInfoActivity extends AppCompatActivity {
-    TextView phone, email, password, position, numberOffDays, numberOffAcceptedDenied;
+    TextView phone, email, position, numberOffDays, name;
+    //TextView numberOffAcceptedDenied;
+    ImageView imageProfile;
     CollapsingToolbarLayout mCollapsingToolbarLayout;
-    Toolbar toolbar;
+    //Toolbar toolbar;
     Users users;
     DatabaseReference mDatabaseReference;
     List<RequestItem> requestItemList;
@@ -36,18 +40,20 @@ public class UserInfoActivity extends AppCompatActivity {
     FloatingActionButton fab;
 
     final static public String TAG = ".USerInfoLogin";
+    boolean isAdmin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
         final Intent intent = getIntent();
         users = (Users) intent.getSerializableExtra("user");
+        isAdmin = intent.getBooleanExtra("isAdmin", false);
 
         mapping();
-        setSupportActionBar(toolbar);
+/*        setSupportActionBar(toolbar);
         mCollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
         mCollapsingToolbarLayout.setTitle(users.getName());
-        mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorAccent));
+        mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorAccent));*/
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,12 +61,13 @@ public class UserInfoActivity extends AppCompatActivity {
                 Intent intent1 = new Intent(UserInfoActivity.this, EditUserActivity.class);
                 intent1.putExtra("user", users);
                 intent1.putExtra("signal", "update");
+                intent1.putExtra("isAdmin", isAdmin);
                 startActivity(intent1);
             }
         });
 
         show();
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("day_off/" + users.getEmail().replace(".", ""));
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("day_off/" + users.getUid());
         requestItemList = new ArrayList<>();
 
         if (mChildEventListener == null){
@@ -77,9 +84,9 @@ public class UserInfoActivity extends AppCompatActivity {
                         }
                         Log.i(TAG, requestItemList.get(0).toString());
                         numberOffDays.setText(getString(R.string.number_off_days) + requestItemList.size());
-                        if (requestItemList.size() > 0){
+/*                        if (requestItemList.size() > 0){
                             numberOffAcceptedDenied.setText(getString(R.string.accepted) + daysOffAccept + getString(R.string.denied) + daysOffDeny);
-                        }
+                        }*/
                     }
                 }
 
@@ -107,27 +114,29 @@ public class UserInfoActivity extends AppCompatActivity {
         }
 
         numberOffDays.setText(getString(R.string.number_off_days) + requestItemList.size());
-        if (requestItemList.size() > 0){
+/*        if (requestItemList.size() > 0){
             numberOffAcceptedDenied.setText(getString(R.string.accepted) + daysOffAccept + getString(R.string.denied) + daysOffDeny);
-        }
+        }*/
     }
 
+
     private void mapping() {
-        email = findViewById(R.id.email_user_info);
-        position = findViewById(R.id.position_user_info);
-        phone = findViewById(R.id.phone_user_info);
-        password = findViewById(R.id.password_user_info);
-        numberOffDays = findViewById(R.id.number_off_day_info);
-        numberOffAcceptedDenied = findViewById(R.id.number_off_accepted_denied);
-        toolbar = findViewById(R.id.toolbar);
+        email = findViewById(R.id.email_profile_email);
+        position = findViewById(R.id.user_profile_position);
+        phone = findViewById(R.id.user_profile_phone);
+        numberOffDays = findViewById(R.id.user_profile_off_day);
+        //numberOffAcceptedDenied = findViewById(R.id.number_off_accepted_denied);
+        //toolbar = findViewById(R.id.toolbar);
         fab = findViewById(R.id.fab_info);
+        name = findViewById(R.id.user_profile_name);
+        imageProfile = findViewById(R.id.user_profile_photo);
     }
 
     private void show() {
         email.setText(String.format("Email: %s", users.getEmail()));
         position.setText(String.format("%s: %s", getString(R.string.position_in_company), users.getPosition()));
         phone.setText(String.format("%s: %s", getString(R.string.phone_number), users.getPhone()));
-        password.setText(String.format("%s: %s", getString(R.string.password), users.getPassword()));
-
+        name.setText(users.getName());
+        Glide.with(UserInfoActivity.this).load(users.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(imageProfile);
     }
 }

@@ -20,7 +20,6 @@ public class TaskDetailActivity extends AppCompatActivity {
     private EditText inputTitleTask, inputContentTask;
     private Button btnCancel, btnSave;
 
-    String email;
     Task task;
     String keyTask;
     @Override
@@ -32,8 +31,6 @@ public class TaskDetailActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         final String signal = intent.getStringExtra("signal");
-
-        email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
 
         if (signal.equals("edit")) {
             task = (Task) intent.getSerializableExtra("task");
@@ -74,9 +71,10 @@ public class TaskDetailActivity extends AppCompatActivity {
                         task.setTaskTitle(title);
                         task.setTaskContent(content);
                     }
-                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("task/" + email.replace(".", ""));
+                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("task/" + FirebaseAuth.getInstance().getUid());
                     if (signal.equals("add")){
-                        reference.push().setValue(task);
+                        String keyTask = reference.push().getKey();
+                        reference.child(keyTask).setValue(task);
                         Toast.makeText(TaskDetailActivity.this, "Add new task successful", Toast.LENGTH_SHORT).show();
                     }else {
                         reference.child(keyTask).setValue(task);

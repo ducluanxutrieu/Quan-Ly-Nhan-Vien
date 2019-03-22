@@ -1,9 +1,9 @@
 package com.ducluanxutrieu.quanlynhanvien.Adapter;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,62 +16,61 @@ import com.ducluanxutrieu.quanlynhanvien.Models.RequestItem;
 import com.ducluanxutrieu.quanlynhanvien.Models.TokenUser;
 import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.List;
 
-public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ItemViewHolder>{
-    private Context context;
-    private List<RequestItem> requestItemList;
+public class RequestAdapter extends FirebaseRecyclerAdapter<RequestItem, RequestAdapter.ItemViewHolder> {
+    private View rootView;
 
-    public RequestAdapter() {}
-
-    public RequestAdapter(Context context, List<RequestItem> requestItemList) {
-        this.context = context;
-        this.requestItemList = requestItemList;
+    public RequestAdapter(@NonNull FirebaseRecyclerOptions<RequestItem> options) {
+        super(options);
     }
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
-        View rootView = layoutInflater.inflate(R.layout.request_item, viewGroup, false);
+        rootView = layoutInflater.inflate(R.layout.item_request, viewGroup, false);
 
         return new ItemViewHolder(rootView);
     }
 
+
     @Override
-    public void onBindViewHolder(@NonNull final ItemViewHolder itemViewHolder, int i) {
-        final int position = itemViewHolder.getAdapterPosition();
-        itemViewHolder.name.setText(requestItemList.get(position).getName());
-        itemViewHolder.content.setText(requestItemList.get(position).getContent());
-        itemViewHolder.date.setText(requestItemList.get(position).getDate());
-        itemViewHolder.time.setText(requestItemList.get(position).getTime());
-        itemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+    protected void onBindViewHolder(@NonNull final ItemViewHolder holder, final int position, @NonNull final RequestItem model) {
+        final Context context = holder.itemView.getContext();
+
+        holder.name.setText(model.getName());
+        holder.content.setText(model.getContent());
+        holder.date.setText(model.getDate());
+        holder.time.setText(model.getTime());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                AlertDialog.Builder builder = new AlertDialog.Builder(holder.itemView.getContext());
                 builder.setTitle("Accept off day")
                         .setNegativeButton("Deny", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                requestItemList.get(position).setAccept(false);
-                                setAccept(requestItemList.get(position));
-                                itemViewHolder.accept.setText(context.getString(R.string.denied));
-                                itemViewHolder.accept.setVisibility(View.VISIBLE);
+                                model.setAccept(false);
+                                setAccept(model);
+                                holder.accept.setText(context.getString(R.string.denied));
+                                holder.accept.setVisibility(View.VISIBLE);
                             }
                         })
                         .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                requestItemList.get(position).setAccept(true);
-                                setAccept(requestItemList.get(position));
-                                itemViewHolder.accept.setText(context.getString(R.string.accepted));
-                                itemViewHolder.accept.setVisibility(View.VISIBLE);
+                                model.setAccept(true);
+                                setAccept(model);
+                                holder.accept.setText(context.getString(R.string.accepted));
+                                holder.accept.setVisibility(View.VISIBLE);
                             }
                         });
                 AlertDialog alertDialog = builder.create();
@@ -79,20 +78,20 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ItemView
             }
         });
 
-        if (requestItemList.get(position).isAccept()){
-            itemViewHolder.accept.setText(context.getString(R.string.accepted));
-            itemViewHolder.accept.setVisibility(View.VISIBLE);
+        if (model.isAccept()){
+            holder.accept.setText(holder.itemView.getContext().getString(R.string.accepted));
+            holder.accept.setVisibility(View.VISIBLE);
         }else {
-            itemViewHolder.accept.setText(context.getString(R.string.denied));
-            itemViewHolder.accept.setVisibility(View.VISIBLE);
+            holder.accept.setText(context.getString(R.string.denied));
+            holder.accept.setVisibility(View.VISIBLE);
         }
     }
 
     private void setAccept(RequestItem requestItem){
         DatabaseReference referenceRequest = FirebaseDatabase.getInstance().getReference().child("request_from_staff/" + "/" + requestItem.getRequestKey());
-        DatabaseReference referenceDayOff = FirebaseDatabase.getInstance().getReference().child("day_off/" + requestItem.getEmail().replace(".", "") + "/" + requestItem.getRequestKey());
-        DatabaseReference sendMessageToStaff = FirebaseDatabase.getInstance().getReference().child("message/admin@gmailcom/" + requestItem.getEmail().replace(".", ""));
-        DatabaseReference receiveMessageToStaff = FirebaseDatabase.getInstance().getReference().child("message/" + requestItem.getEmail().replace(".", "") + "/admin@gmailcom");
+        DatabaseReference referenceDayOff = FirebaseDatabase.getInstance().getReference().child("day_off/" + requestItem.getUid() + "/" + requestItem.getRequestKey());
+        DatabaseReference sendMessageToStaff = FirebaseDatabase.getInstance().getReference().child("message/admin@gmailcom/" + requestItem.getUid());
+        DatabaseReference receiveMessageToStaff = FirebaseDatabase.getInstance().getReference().child("message/" + requestItem.getUid() + "/admin@gmailcom");
         referenceRequest.setValue(requestItem);
         referenceDayOff.setValue(requestItem);
 
@@ -106,11 +105,11 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ItemView
         sendMessageToStaff.push().setValue(messageItem);
         receiveMessageToStaff.push().setValue(messageItem);
 
-        pushNotification(isAccept, requestItem.getEmail());
+        pushNotification(isAccept, requestItem.getUid());
     }
 
     private void pushNotification(final String message, String email) {
-        final MyTask task = new MyTask(context);
+        final MyTask task = new MyTask(rootView.getContext());
 
         final String BASE_URL = "https://quan-ly-nhan-vien.firebaseapp.com/api";
         final String name = "Admin";
@@ -131,11 +130,6 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ItemView
 
             }
         });
-    }
-
-    @Override
-    public int getItemCount() {
-        return requestItemList.size();
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {

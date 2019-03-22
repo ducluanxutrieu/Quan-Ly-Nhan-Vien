@@ -6,29 +6,39 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Models.MessageItem;
 import com.ducluanxutrieu.quanlynhanvien.R;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseError;
 
 import java.util.List;
 
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ItemViewHolder> {
+public class MessageAdapter extends FirebaseRecyclerAdapter<MessageItem, MessageAdapter.ItemViewHolder> {
     private static final int RIGHT_MSG = 0;
     private static final int LEFT_MSG = 1;
-    private List<MessageItem> messageItems;
-    private String nameUser;
-
-    public MessageAdapter(List<MessageItem> messageItems, String nameUser) {
-        this.messageItems = messageItems;
-        this.nameUser = nameUser;
+    private static final String nameUser = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+    private View view;
+    /**
+     * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
+     * {@link FirebaseRecyclerOptions} for configuration options.
+     *
+     * @param options
+     */
+    public MessageAdapter(@NonNull FirebaseRecyclerOptions<MessageItem> options) {
+        super(options);
     }
+
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         LayoutInflater inflater =LayoutInflater.from(viewGroup.getContext());
-        View view;
+
         if (viewType == RIGHT_MSG){
             view = inflater.inflate(R.layout.item_message_right, viewGroup, false);
         }else {
@@ -38,30 +48,29 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ItemView
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ItemViewHolder itemViewHolder, int i) {
-        itemViewHolder.contentItemMessage.setText(messageItems.get(itemViewHolder.getAdapterPosition()).getText());
-        itemViewHolder.nameItemMessage.setText(messageItems.get(itemViewHolder.getAdapterPosition()).getName());
+    public void onError(@NonNull DatabaseError error) {
+        super.onError(error);
+        Toast.makeText(view.getContext(), "Error send message", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onBindViewHolder(@NonNull ItemViewHolder holder, int position, @NonNull MessageItem model) {
+        holder.contentItemMessage.setText(model.getText());
+        holder.nameItemMessage.setText(model.getName());
     }
 
     @Override
     public long getItemId(int position) {
-
         return super.getItemId(position);
     }
 
     @Override
     public int getItemViewType(int position) {
-        MessageItem messageItem = messageItems.get(position);
-
-        if (messageItem.getName().equals(nameUser)){
+        if (getItem(position).getName().equals(nameUser)){
             return RIGHT_MSG;
         }else {
             return LEFT_MSG;
         }
-    }
-    @Override
-    public int getItemCount() {
-        return messageItems.size();
     }
 
 

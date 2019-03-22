@@ -1,23 +1,24 @@
 package com.ducluanxutrieu.quanlynhanvien.Activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.ducluanxutrieu.quanlynhanvien.DepthTransformation;
 import com.ducluanxutrieu.quanlynhanvien.Dialog.ChangePassword;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.FriendsListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.RequestListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.StaffListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.TasksFragment;
-import com.ducluanxutrieu.quanlynhanvien.Interface.TransferTask;
 import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
 import com.ducluanxutrieu.quanlynhanvien.Models.TokenUser;
@@ -26,6 +27,7 @@ import com.ducluanxutrieu.quanlynhanvien.R;
 import com.ducluanxutrieu.quanlynhanvien.Models.Users;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.ViewPagerAdapter;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,11 +37,17 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 
-public class MainActivity extends AppCompatActivity
-        implements TransferSignal, TransferTask {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+public class MainActivity extends AppCompatActivity implements TransferSignal {
 
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
@@ -49,17 +57,25 @@ public class MainActivity extends AppCompatActivity
     private DatabaseReference mFriendReference;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFireUser;
+    private FirebaseFunctions mFunctions;
 
     private boolean isUserAdmin = false;
     private boolean userAlreadyFriend = false;
 
-    private String rootEmailWithoutDot;
-    private static String TAG = "tokentoken";
+    private String rootUid;
+    private Users userAdmin;
+
+    static private final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ProgressDialog startDialog = new ProgressDialog(MainActivity.this);
+        startDialog.setTitle(getString(R.string.loading));
+        startDialog.show();
+
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         PushNotificationManager.getInstance().init(this);
@@ -68,79 +84,75 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar_main);
 
         setSupportActionBar(toolbar);
-
+        DepthTransformation depthTransformation = new DepthTransformation();
         mViewPager.setSaveFromParentEnabled(false);
 
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mViewPagerAdapter);
+        mViewPager.setPageTransformer(true, depthTransformation);
         mTabLayout.setupWithViewPager(mViewPager);
 
         FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersReference = mFirebaseDatabase.getReference();
         mFriendReference = mFirebaseDatabase.getReference();
-
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mFunctions = FirebaseFunctions.getInstance();
         mFireUser = mFirebaseAuth.getCurrentUser();
-        if (mFireUser !=  null) {
-            toolbar.setTitle(mFireUser.getDisplayName());
+        PushNotificationManager.getInstance().init(this);
+        rootUid = mFirebaseAuth.getUid();
 
-            mViewPagerAdapter.addFragment(new FriendsListFragment(), "Friends List");
-            mViewPagerAdapter.addFragment(new TasksFragment(), "Tasks");
+        if (mFireUser != null) {
+            toolbar.setTitle(mFireUser.getDisplayName());
+            mViewPagerAdapter.addFragment(new FriendsListFragment());
+            mViewPagerAdapter.addFragment(new TasksFragment());
             mViewPagerAdapter.notifyDataSetChanged();
             checkAdmin();
         }
 
-        PushNotificationManager.getInstance().init(this);
+        startDialog.dismiss();
 
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(MainActivity.this);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                FirebaseInstanceId.getInstance().getInstanceId()
-                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                                if (!task.isSuccessful()) {
-                                    return;
-                                }
-                                // Get new Instance ID token
-                                String token = task.getResult().getToken();
-                                // Log and toast
-                                TokenUser tokenUser1 = new TokenUser(token);
-                                mUsersReference.child("token/" + rootEmailWithoutDot).setValue(tokenUser1);
-                            }
-                        });
-            }
-        });
-        thread.start();
+
+        getToken();
+    }
+
+    private void getToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (task.isSuccessful()) {
+                            String token = Objects.requireNonNull(task.getResult()).getToken();
+                            // Log and toast
+                            HashMap<String, Object> map = new HashMap<>();
+                            map.put(token, true);
+                            mUsersReference.child("users/" + rootUid+"/notificationTokens").updateChildren(map);
+                        }
+                    }
+                });
     }
 
     private void checkAdmin() {
-        SharedPreferences sharedPreferences = getSharedPreferences("com.ducluanxutrieu.quanlynhanvien", 0);
-        rootEmailWithoutDot = sharedPreferences.getString("email", null);
-        if (rootEmailWithoutDot != null){
-            rootEmailWithoutDot = rootEmailWithoutDot.replace(".", "");
-        } else {
-            return;
-        }
-        DatabaseReference oneItemValue = mUsersReference.child("user" + "/" + rootEmailWithoutDot);
+        DatabaseReference oneItemValue = mUsersReference.child("users/" + rootUid);
+
         oneItemValue.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Users userAdmin = dataSnapshot.getValue(Users.class);
+                userAdmin = dataSnapshot.getValue(Users.class);
                 isUserAdmin = userAdmin.isAdmin();
                 if (isUserAdmin) {
-                    mViewPagerAdapter.addFragment(new StaffListFragment(), getString(R.string.staff_list));
-                    mViewPagerAdapter.addFragment(new RequestListFragment(), getString(R.string.request_list));
+                    mViewPagerAdapter.addFragment(new StaffListFragment());
+                    mViewPagerAdapter.addFragment(new RequestListFragment());
                     mViewPagerAdapter.notifyDataSetChanged();
-                    mTabLayout.getTabAt(0).setIcon(R.drawable.avatar);
-                    mTabLayout.getTabAt(1).setIcon(R.drawable.list);
-                    mTabLayout.getTabAt(2).setIcon(R.drawable.staff);
-                    mTabLayout.getTabAt(3).setIcon(R.drawable.request_list);
+
+                    mTabLayout.getTabAt(0).setIcon(R.drawable.ic_message_blue_24dp);
+                    mTabLayout.getTabAt(1).setIcon(R.drawable.ic_list_tasks_24px);
+                    mTabLayout.getTabAt(2).setIcon(R.drawable.ic_people_blue_24dp);
+                    mTabLayout.getTabAt(3).setIcon(R.drawable.ic_request_list_blue_24dp);
                     mViewPager.setOffscreenPageLimit(3);
                 }else {
-                    mTabLayout.getTabAt(0).setIcon(R.drawable.avatar);
-                    mTabLayout.getTabAt(1).setIcon(R.drawable.list);
+                    mTabLayout.getTabAt(0).setIcon(R.drawable.ic_message_blue_24dp);
+                    mTabLayout.getTabAt(1).setIcon(R.drawable.ic_list_tasks_24px);
                 }
             }
             @Override
@@ -163,12 +175,18 @@ public class MainActivity extends AppCompatActivity
         switch (id){
             case R.id.sign_out: {
                 mFirebaseAuth.signOut();
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("token/" + rootEmailWithoutDot);
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("token/" + rootUid);
                 reference.removeValue();
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
                 break;
+            }
+
+            case R.id.my_info: {
+                Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
+                intent.putExtra("user", userAdmin);
+                startActivity(intent);
             }
 
             case R.id.change_password: {
@@ -185,14 +203,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTransferSignal(String signalMessage, String message) {
+    public void onTransferSignal(String signalMessage, String uid) {
         if (signalMessage.equals("AddFriend")){
-                final String emailInput = message.replace(".", "");
-                final String rootEmail = mFireUser.getEmail().replace(".", "");
-                checkFriendAlreadyExist(rootEmail, emailInput);
+                checkFriendAlreadyExist(uid);
                 if (!userAlreadyFriend) {
                     try {
-                    mFriendReference.child("user/" + emailInput).addListenerForSingleValueEvent(new ValueEventListener() {
+                    mFriendReference.child("users/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             Users users = dataSnapshot.getValue(Users.class);
@@ -200,9 +216,10 @@ public class MainActivity extends AppCompatActivity
                                 String name = users.getName();
                                 String uid = users.getUid();
                                 if (name != null && uid != null) {
-                                    Friend friend = new Friend(users.getName(), users.getEmail(), users.getUid(), "");
-                                    mFriendReference.child("friend_ship/" + rootEmail + "/" + emailInput).setValue(friend);
-                                    Toast.makeText(getApplicationContext(), "Add " + friend.getName() + " succesful", Toast.LENGTH_LONG).show();
+                                    Friend friend = new Friend(users.getName(), users.getUid(), "", users.getAvatarUrl());
+                                    mFriendReference.child("friend_ship/" + mFireUser.getUid() + "/" + uid).setValue(friend);
+                                    Toast.makeText(getApplicationContext(), "Add " + friend.getName() + " successful", Toast.LENGTH_LONG).show();
+
                                 }
                             }else {
                                 Toast.makeText(MainActivity.this, "Could't find your friend!", Toast.LENGTH_LONG).show();
@@ -225,15 +242,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onTransferTask(String title, String content) {
-       TasksFragment tasksFragment = (TasksFragment) mViewPagerAdapter.getItem(1);
-       tasksFragment.addNewTask(title,content);
-    }
 
-    private void checkFriendAlreadyExist(String rootEmail, String s1) {
+    private void checkFriendAlreadyExist(String s1) {
         try {
-            mFriendReference.child("friend_ship/" + rootEmail + "/" + s1).addListenerForSingleValueEvent(new ValueEventListener() {
+            mFriendReference.child("friend_ship/" + rootUid + "/" + s1).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Friend friend = dataSnapshot.getValue(Friend.class);
@@ -251,6 +263,4 @@ public class MainActivity extends AppCompatActivity
             userAlreadyFriend = false;
         }
     }
-
-
 }

@@ -7,6 +7,11 @@
         android:title="@string/change_password"
         />
     <item
+        android:id="@+id/my_info"
+        android:orderInCategory="100"
+        android:title="@string/my_info"
+        />
+    <item
         android:id="@+id/ask_for_day_off"
         android:orderInCategory="100"
         android:title="@string/ask_for_a_day_off"

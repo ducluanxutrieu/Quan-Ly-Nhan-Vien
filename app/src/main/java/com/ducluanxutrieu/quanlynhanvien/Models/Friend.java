@@ -3,19 +3,19 @@ package com.ducluanxutrieu.quanlynhanvien.Models;
 import java.io.Serializable;
 
 public class Friend implements Serializable {
-    String name;
-    String email;
-    String uid;
-    String recentMessage;
+    private String name;
+    private String uid;
+    private String recentMessage;
+    private String avatarUrl;
 
     public Friend() {
     }
 
-    public Friend(String name, String email, String uid, String recentMessage) {
+    public Friend(String name, String uid, String recentMessage, String avatarUrl) {
         this.name = name;
-        this.email = email;
         this.uid = uid;
         this.recentMessage = recentMessage;
+        this.avatarUrl = avatarUrl;
     }
 
     public String getName() {
@@ -24,14 +24,6 @@ public class Friend implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getUid() {
@@ -50,4 +42,11 @@ public class Friend implements Serializable {
         this.recentMessage = recentMessage;
     }
 
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 }
