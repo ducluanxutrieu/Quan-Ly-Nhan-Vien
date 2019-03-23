@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -22,18 +23,27 @@ import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableResult;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAdapter.ItemViewHolder> {
     private View rootView;
 
+    //Firebase
+    private FirebaseFunctions mFunction;
+
+    private final static String TAG = ".StaffList";
     public StaffListAdapter(@NonNull FirebaseRecyclerOptions<Users> options) {
         super(options);
     }
@@ -43,6 +53,9 @@ public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAd
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         rootView = inflater.inflate(R.layout.item_staff, viewGroup, false);
+
+        mFunction = FirebaseFunctions.getInstance();
+
         return new ItemViewHolder(rootView);
     }
 
@@ -66,7 +79,8 @@ public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAd
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public boolean onLongClick(View v) {
+            public boolean onLongClick(final View v) {
+                Log.i(TAG, "ahihi");
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                 builder.setTitle(rootView.getContext().getString(R.string.delete_this_account))
                         .setIcon(android.R.drawable.ic_dialog_alert)
@@ -74,12 +88,26 @@ public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAd
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                deleteUserFromAuth(model.getUid());
-                                deleteUserFromDatabase(model.getEmail());
+                                //deleteUserFromAuth(model.getUid());
+                                //deleteUserFromDatabase(model.getEmail());
+                                HashMap<String, Object> map = new HashMap<>();
+                                map.put("uid", model.getUid());
+                                deleteUser(map).addOnSuccessListener(new OnSuccessListener<String>() {
+                                    @Override
+                                    public void onSuccess(String s) {
+                                        Toast.makeText(v.getContext(), s, Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(v.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
                             }
                         })
                         .setNegativeButton(rootView.getContext().getString(R.string.cancel), null);
-                builder.create();
+                builder.create().show();
                 return true;
             }
         });
@@ -113,5 +141,16 @@ public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAd
         email = email.replace(".", "");
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("user/" + email);
         reference.removeValue();
+    }
+
+    private Task<String> deleteUser(HashMap<String, Object> map){
+        return mFunction.getHttpsCallable("deleteUser")
+                .call(map)
+                .continueWith(new Continuation<HttpsCallableResult, String>() {
+                    @Override
+                    public String then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+                        return task.getResult().toString();
+                    }
+                });
     }
 }

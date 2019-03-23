@@ -10,15 +10,17 @@ public class Users implements Serializable {
     private String uid;
     private boolean admin;
     private String avatarUrl;
+    private String password;
 
-    public Users(String name, String email, String phone, String position, String uid, String avatarUrl, boolean admin) {
+    public Users(String name, String email, String phone, String position, String uid, String avatarUrl, String password, boolean admin) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.position = position;
         this.uid = uid;
-        this.admin = admin;
         this.avatarUrl = avatarUrl;
+        this.password = password;
+        this.admin = admin;
     }
 
     public Users() {
@@ -79,4 +81,13 @@ public class Users implements Serializable {
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 }

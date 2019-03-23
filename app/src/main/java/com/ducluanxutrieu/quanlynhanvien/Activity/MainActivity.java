@@ -8,26 +8,22 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.DepthTransformation;
-import com.ducluanxutrieu.quanlynhanvien.Dialog.ChangePassword;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.FriendsListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.RequestListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.StaffListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.TasksFragment;
 import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
-import com.ducluanxutrieu.quanlynhanvien.Models.TokenUser;
 import com.ducluanxutrieu.quanlynhanvien.PushNotificationManager;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.ducluanxutrieu.quanlynhanvien.Models.Users;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.ViewPagerAdapter;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,14 +33,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements TransferSignal {
@@ -57,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
     private DatabaseReference mFriendReference;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mFireUser;
-    private FirebaseFunctions mFunctions;
 
     private boolean isUserAdmin = false;
     private boolean userAlreadyFriend = false;
@@ -96,8 +87,9 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
         mUsersReference = mFirebaseDatabase.getReference();
         mFriendReference = mFirebaseDatabase.getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mFunctions = FirebaseFunctions.getInstance();
         mFireUser = mFirebaseAuth.getCurrentUser();
+
+        //pushNotification to
         PushNotificationManager.getInstance().init(this);
         rootUid = mFirebaseAuth.getUid();
 
@@ -187,12 +179,6 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
                 Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
                 intent.putExtra("user", userAdmin);
                 startActivity(intent);
-            }
-
-            case R.id.change_password: {
-                ChangePassword changePassword = new ChangePassword();
-                changePassword.show(getSupportFragmentManager(), "ChangePassword");
-                break;
             }
             case R.id.ask_for_day_off: {
                 Intent intent = new Intent(MainActivity.this, AskOffDayActivity.class);

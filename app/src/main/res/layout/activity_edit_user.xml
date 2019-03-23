@@ -37,7 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_account_name_24dp"
+                    android:src="@drawable/ic_account_name_24dp"
                     android:layout_margin="@dimen/margin_item"
                     />
                 <android.support.design.widget.TextInputLayout
@@ -56,6 +56,7 @@
                         android:layout_height="wrap_content"
                         android:hint="@string/full_name"
                         android:maxLines="1"
+                        android:maxLength="16"
                         />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
@@ -69,7 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_email_24dp"
+                android:src="@drawable/ic_email_24dp"
                 android:layout_margin="@dimen/margin_item"
                 />
             <android.support.design.widget.TextInputLayout
@@ -95,18 +96,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:id="@+id/edit_text_password_layout"
                 >
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    app:srcCompat="@drawable/ic_password_blue_24dp"
+                    android:src="@drawable/ic_password_blue_24dp"
                     android:layout_margin="@dimen/margin_item"
                     />
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:passwordToggleEnabled="true"
                     android:layout_margin="@dimen/margin_vertical"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     app:helperText="* Requited"
@@ -118,7 +119,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/password"
-                        android:inputType="phone"
+                        android:inputType="textPassword"
                         />
                 </android.support.design.widget.TextInputLayout>
             </LinearLayout>
@@ -132,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_contact_phone_blue_24dp"
+                android:src="@drawable/ic_contact_phone_blue_24dp"
                 android:layout_margin="@dimen/margin_item"
                 />
             <android.support.design.widget.TextInputLayout
@@ -161,7 +162,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_position_blue_24dp"
+                android:src="@drawable/ic_position_blue_24dp"
                 android:layout_margin="@dimen/margin_item"
                 />
             <android.support.design.widget.TextInputLayout

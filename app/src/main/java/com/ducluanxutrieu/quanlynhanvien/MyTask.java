@@ -72,13 +72,13 @@ public class MyTask extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
 
-        if (s.startsWith("created")) {
+/*        if (s.startsWith("created")) {
             EditUserActivity.addAccountToDatabase(s);
             Toast.makeText(context, context.getString(R.string.add_new_member_complete), Toast.LENGTH_SHORT).show();
         }else if (s.startsWith("update")){
             EditUserActivity.updateUserToDatabase();
             Toast.makeText(context, context.getString(R.string.update_user_successful), Toast.LENGTH_SHORT).show();
-        }
+        }*/
         Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
     }
 }

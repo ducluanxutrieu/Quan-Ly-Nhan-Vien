@@ -3,7 +3,6 @@ package com.ducluanxutrieu.quanlynhanvien.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,10 +27,7 @@ import java.util.List;
 
 public class UserInfoActivity extends AppCompatActivity {
     TextView phone, email, position, numberOffDays, name;
-    //TextView numberOffAcceptedDenied;
     ImageView imageProfile;
-    CollapsingToolbarLayout mCollapsingToolbarLayout;
-    //Toolbar toolbar;
     Users users;
     DatabaseReference mDatabaseReference;
     List<RequestItem> requestItemList;
@@ -50,17 +46,13 @@ public class UserInfoActivity extends AppCompatActivity {
         isAdmin = intent.getBooleanExtra("isAdmin", false);
 
         mapping();
-/*        setSupportActionBar(toolbar);
-        mCollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
-        mCollapsingToolbarLayout.setTitle(users.getName());
-        mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorAccent));*/
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent1 = new Intent(UserInfoActivity.this, EditUserActivity.class);
                 intent1.putExtra("user", users);
-                intent1.putExtra("signal", "update");
+                intent1.putExtra("signal", "updateUser");
                 intent1.putExtra("isAdmin", isAdmin);
                 startActivity(intent1);
             }
@@ -84,9 +76,6 @@ public class UserInfoActivity extends AppCompatActivity {
                         }
                         Log.i(TAG, requestItemList.get(0).toString());
                         numberOffDays.setText(getString(R.string.number_off_days) + requestItemList.size());
-/*                        if (requestItemList.size() > 0){
-                            numberOffAcceptedDenied.setText(getString(R.string.accepted) + daysOffAccept + getString(R.string.denied) + daysOffDeny);
-                        }*/
                     }
                 }
 
@@ -114,9 +103,6 @@ public class UserInfoActivity extends AppCompatActivity {
         }
 
         numberOffDays.setText(getString(R.string.number_off_days) + requestItemList.size());
-/*        if (requestItemList.size() > 0){
-            numberOffAcceptedDenied.setText(getString(R.string.accepted) + daysOffAccept + getString(R.string.denied) + daysOffDeny);
-        }*/
     }
 
 
@@ -125,8 +111,6 @@ public class UserInfoActivity extends AppCompatActivity {
         position = findViewById(R.id.user_profile_position);
         phone = findViewById(R.id.user_profile_phone);
         numberOffDays = findViewById(R.id.user_profile_off_day);
-        //numberOffAcceptedDenied = findViewById(R.id.number_off_accepted_denied);
-        //toolbar = findViewById(R.id.toolbar);
         fab = findViewById(R.id.fab_info);
         name = findViewById(R.id.user_profile_name);
         imageProfile = findViewById(R.id.user_profile_photo);

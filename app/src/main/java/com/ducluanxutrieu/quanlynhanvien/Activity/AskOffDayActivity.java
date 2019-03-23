@@ -1,5 +1,6 @@
 package com.ducluanxutrieu.quanlynhanvien.Activity;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.design.button.MaterialButton;
 import android.support.design.widget.TextInputEditText;
@@ -180,14 +181,6 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             @Override
             public void onClick(View v) {
                 String content = inputContent.getText().toString();
-/*                RequestItem requestItem = new RequestItem(
-                        date,
-                        mFirebaseUser.getDisplayName(),
-                        mFirebaseUser.getEmail(),
-                        content,
-                        getTimeNow(),
-                        false
-                        );*/
                 String startDate = chooseStartDate.getText().toString();
                 String endDate = chooseEndDate.getText().toString();
                 if (!startDate.isEmpty() && !endDate.isEmpty()){
@@ -216,11 +209,6 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
                         });
                     }
                 }
-                //DatabaseReference ref = mFireDatabase.getReference().child("day_off/" + mFirebaseUser.getUid());
-                //requestItem.setRequestKey(mReference.push().getKey());
-                //mReference.child(requestItem.getRequestKey()).setValue(requestItem);
-                //ref.child(requestItem.getRequestKey()).setValue(requestItem);
-                //pushNotification(content);
                 finish();
             }
         });
@@ -328,6 +316,7 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
         textViewNumberThanOff = findViewById(R.id.text_view_number_than_off);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void onTransferSignal(String signalMessage, String message) {
         if (signalMessage.equals("startDate")) {
@@ -359,9 +348,12 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             } else {
                 //Toast.makeText(this, "Number Off Day Edit" + numberDaysOffEdit(), Toast.LENGTH_SHORT).show();
                 thanDays = numberDaysOffEdit() - numberOffDays;
+                Log.i(TAG, thanDays + "");
                 if (thanDays > 0) {
+                    textViewNumberThanOff.setVisibility(View.VISIBLE);
                     textViewNumberThanOff.setText(String.format("%s%d%s", getString(R.string.more_than), thanDays, getString(R.string.days)));
                 }else if (thanDays < 0){
+                    textViewNumberThanOff.setVisibility(View.VISIBLE);
                     textViewNumberThanOff.setText(String.format("%s%d%s", getString(R.string.less_than), thanDays, getString(R.string.days)));
                 }
                 sendRequestOffDays.setEnabled(true);

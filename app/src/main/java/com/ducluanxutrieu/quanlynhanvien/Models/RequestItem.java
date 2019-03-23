@@ -3,10 +3,13 @@ package com.ducluanxutrieu.quanlynhanvien.Models;
 import java.io.Serializable;
 
 public class RequestItem implements Serializable {
-    private String date;
+    private String startDate;
+    private String endDate;
+    private int thanDays;
+    private String timeRequest;
     private String name;
-    private String content;
-    private String time;
+    private String text;
+    private String offType;
     private boolean accept;
     private String requestKey;
     private String uid;
@@ -14,21 +17,48 @@ public class RequestItem implements Serializable {
     public RequestItem() {
     }
 
-    public RequestItem(String date, String name, String uid, String content, String time, boolean accept) {
-        this.date = date;
+    public RequestItem(String startDate, String endDate, int thanDays, String timeRequest, String name, String text, String offType, boolean accept, String uid) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.thanDays = thanDays;
+        this.timeRequest = timeRequest;
         this.name = name;
-        this.uid = uid;
-        this.content = content;
+        this.text = text;
+        this.offType = offType;
         this.accept = accept;
-        this.time = time;
+        this.uid = uid;
     }
 
-    public String getDate() {
-        return date;
+    public String getStartDate() {
+        return startDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public int getThanDays() {
+        return thanDays;
+    }
+
+    public void setThanDays(int thanDays) {
+        this.thanDays = thanDays;
+    }
+
+    public String getTimeRequest() {
+        return timeRequest;
+    }
+
+    public void setTimeRequest(String timeRequest) {
+        this.timeRequest = timeRequest;
     }
 
     public String getName() {
@@ -39,12 +69,20 @@ public class RequestItem implements Serializable {
         this.name = name;
     }
 
-    public String getContent() {
-        return content;
+    public String getText() {
+        return text;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getOffType() {
+        return offType;
+    }
+
+    public void setOffType(String offType) {
+        this.offType = offType;
     }
 
     public boolean isAccept() {
@@ -53,14 +91,6 @@ public class RequestItem implements Serializable {
 
     public void setAccept(boolean accept) {
         this.accept = accept;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     public String getRequestKey() {
@@ -78,5 +108,4 @@ public class RequestItem implements Serializable {
     public void setUid(String uid) {
         this.uid = uid;
     }
-
 }

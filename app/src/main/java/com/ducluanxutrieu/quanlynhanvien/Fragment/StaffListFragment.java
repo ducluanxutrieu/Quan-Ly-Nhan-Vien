@@ -45,7 +45,7 @@ public class StaffListFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), EditUserActivity.class);
-                intent.putExtra("signal", "create");
+                intent.putExtra("signal", "createUser");
                 startActivity(intent);
             }
         });

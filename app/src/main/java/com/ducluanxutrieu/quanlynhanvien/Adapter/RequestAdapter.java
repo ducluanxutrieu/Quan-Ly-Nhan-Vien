@@ -47,9 +47,9 @@ public class RequestAdapter extends FirebaseRecyclerAdapter<RequestItem, Request
         final Context context = holder.itemView.getContext();
 
         holder.name.setText(model.getName());
-        holder.content.setText(model.getContent());
-        holder.date.setText(model.getDate());
-        holder.time.setText(model.getTime());
+        holder.content.setText(model.getText());
+        holder.date.setText(model.getStartDate());
+        holder.time.setText(model.getTimeRequest());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,17 +95,17 @@ public class RequestAdapter extends FirebaseRecyclerAdapter<RequestItem, Request
         referenceRequest.setValue(requestItem);
         referenceDayOff.setValue(requestItem);
 
-        String isAccept;
-        if (requestItem.isAccept()) {
-            isAccept = "You can off day " + requestItem.getDate();
-        }else {
-            isAccept = "You can not off day " + requestItem.getDate();
-        }
-        MessageItem messageItem = new MessageItem(isAccept, "Admin",null);
-        sendMessageToStaff.push().setValue(messageItem);
-        receiveMessageToStaff.push().setValue(messageItem);
-
-        pushNotification(isAccept, requestItem.getUid());
+//        String isAccept;
+//        if (requestItem.isAccept()) {
+//            isAccept = "You can off day " + requestItem.get();
+//        }else {
+//            isAccept = "You can not off day " + requestItem.getDate();
+//        }
+//        MessageItem messageItem = new MessageItem(isAccept, "Admin",null);
+//        sendMessageToStaff.push().setValue(messageItem);
+//        receiveMessageToStaff.push().setValue(messageItem);
+//
+//        pushNotification(isAccept, requestItem.getUid());
     }
 
     private void pushNotification(final String message, String email) {
