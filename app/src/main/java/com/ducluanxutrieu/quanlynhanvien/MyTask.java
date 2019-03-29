@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Activity.EditUserActivity;
+import com.ducluanxutrieu.quanlynhanvien.Activity.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -72,13 +73,6 @@ public class MyTask extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
 
-/*        if (s.startsWith("created")) {
-            EditUserActivity.addAccountToDatabase(s);
-            Toast.makeText(context, context.getString(R.string.add_new_member_complete), Toast.LENGTH_SHORT).show();
-        }else if (s.startsWith("update")){
-            EditUserActivity.updateUserToDatabase();
-            Toast.makeText(context, context.getString(R.string.update_user_successful), Toast.LENGTH_SHORT).show();
-        }*/
         Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
     }
 }

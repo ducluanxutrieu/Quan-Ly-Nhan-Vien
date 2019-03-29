@@ -48,6 +48,8 @@ public class FriendsListAdapter extends FirebaseRecyclerAdapter<Friend, FriendsL
                 Context context = v.getContext();
                 Intent intent = new Intent(context, ChatsActivity.class);
                 intent.putExtra("friend", model);
+                intent.putExtra("uid", model.getUid());
+                intent.putExtra("name", model.getName());
                 ActivityOptions options =
                         ActivityOptions.makeCustomAnimation(context, R.anim.fui_slide_in_right, R.anim.fui_slide_out_left);
                 context.startActivity(intent, options.toBundle());

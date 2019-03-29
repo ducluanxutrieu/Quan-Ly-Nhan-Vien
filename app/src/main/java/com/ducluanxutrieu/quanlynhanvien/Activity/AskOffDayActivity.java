@@ -21,19 +21,11 @@ import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Dialog.DatePicker;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
-import com.ducluanxutrieu.quanlynhanvien.Models.TokenUser;
-import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
@@ -53,18 +45,14 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
     TextInputLayout dateTypeLayout, dateStartLayout, dateEndLayout;
     TextView textViewNumberDayCanOff, textViewNumberThanOff;
     String date;
-    String token;
     String dateType;
     int numberOffDays = 0;
     int thanDays = 0;
-    int startDay = 0, startMonth = 0, startYear = 0;
-    int endDay, endMonth, endYear;
+    int dayStart = 0, monthStart = 0, yearStart = 0;
+    int dayEnd = 0, monthEnd = 0, yearEnd = 0;
 
     List<String> dateTypes;
 
-    private FirebaseUser mFirebaseUser;
-    private FirebaseDatabase mFireDatabase;
-    private DatabaseReference mReference;
     private FirebaseFunctions mFunctions;
 
     private static final String TAG = ".AskOffDayActivity";
@@ -73,15 +61,12 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ask_off_day);
 
-        FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseUser = mFirebaseAuth.getCurrentUser();
-        mFireDatabase = FirebaseDatabase.getInstance();
         mFunctions = FirebaseFunctions.getInstance();
-        mReference = mFireDatabase.getReference().child("request_from_staff");
 
         mapping();
         addDateType();
 
+        //Adapter AutoCompleteTextView
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, dateTypes);
         autoDateType.setAdapter(arrayAdapter);
         autoDateType.setThreshold(1);
@@ -89,7 +74,6 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             @Override
             public void onClick(View v) {
                 autoDateType.showDropDown();
-
             }
         });
 
@@ -98,43 +82,11 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 dateType = dateTypes.get(position);
                 dateTypeLayout.setErrorEnabled(false);
-                //dateTypeLayout.setHelperTextEnabled(false);
-
-                switch (position){
-                    case 0: numberOffDays = 1; break; //Đột xuất
-                    case 1 : numberOffDays = 2; break; //Bị bệnh có báo trước
-                    case 2 : numberOffDays = 4; break; //Tai nan
-                    case 3 : numberOffDays = 3; break; //Ket hon
-                    case 4 : numberOffDays = 1; break; //Con ket hon
-                    case 5 : numberOffDays = 3; break; //Dam tang
-                    case 6 : numberOffDays = 180; break; //Sinh De
-                    case 7 : numberOffDays = 5; break; //Vo sinh thuong
-                    case 8 : numberOffDays = 7; break; //Vo sinh phau thuat
-                    case 9 : numberOffDays = 7; break; //Vo sinh con duoi 32 tuan tuoi
-                    case 10 : numberOffDays = 10; break; //Vo sinh doi
-                    case 11 : numberOffDays = 14; break; //Vo sinh doi & phau thuat
-                }
-                dateTypeLayout.setHelperText("You can off " + numberOffDays + " days");
-                dateTypeLayout.setHelperTextEnabled(true);
+                getNumberOffDays(position);
                 textViewNumberDayCanOff.setText("You can off " + numberOffDays + " days");
                 textViewNumberDayCanOff.setVisibility(View.VISIBLE);
             }
         });
-
-        autoDateType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                dateTypeLayout.setErrorEnabled(true);
-                dateTypeLayout.setHelperTextEnabled(true);
-            }
-        });
-
-        getTokenAdmin();
 
         chooseStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,7 +100,7 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             @Override
             public void onClick(View v) {
                 DialogFragment newFragment = new DatePicker();
-                ((DatePicker) newFragment).onSetDate(endDay, endMonth, endYear);
+                ((DatePicker) newFragment).onSetDate(dayEnd, monthEnd - 1, yearEnd);
                 newFragment.show(getSupportFragmentManager(), chooseEndDate.getText().toString());
 
             }
@@ -175,8 +127,6 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             }
         });
 
-
-
         sendRequestOffDays.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,9 +152,11 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
                                 if (task.isSuccessful()){
                                     Toast.makeText(AskOffDayActivity.this, getString(R.string.send_request_successful), Toast.LENGTH_SHORT).show();
                                 }
-                                else {
-                                    Toast.makeText(AskOffDayActivity.this, getString(R.string.fail_send_request_off), Toast.LENGTH_SHORT).show();
-                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(AskOffDayActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -222,25 +174,45 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
         getDateNow();
     }
 
+    private void getNumberOffDays(int position) {
+        switch (position){
+            case 0: numberOffDays = 1; break; //Đột xuất
+            case 1 : numberOffDays = 2; break; //Bị bệnh có báo trước
+            case 2 : numberOffDays = 4; break; //Tai nan
+            case 3 : numberOffDays = 3; break; //Ket hon
+            case 4 : numberOffDays = 1; break; //Con ket hon
+            case 5 : numberOffDays = 3; break; //Dam tang
+            case 6 : numberOffDays = 180; break; //Sinh De
+            case 7 : numberOffDays = 5; break; //Vo sinh thuong
+            case 8 : numberOffDays = 7; break; //Vo sinh phau thuat
+            case 9 : numberOffDays = 7; break; //Vo sinh con duoi 32 tuan tuoi
+            case 10 : numberOffDays = 10; break; //Vo sinh doi
+            case 11 : numberOffDays = 14; break; //Vo sinh doi & phau thuat
+        }
+    }
+
     //12/2/2019 - 10/4/2018
     //15/2/2019 - 10/2/2019
     private int numberDaysOffEdit(){
         int temp = 0;
-        temp += endDay;
-        -- endMonth;
-        for (int year = endYear - startYear; year > 0; year --){
-            for (int month = endMonth; month > 0; month --){
-                temp += checkMonth(month, endYear);
+        temp += dayEnd;
+        while (yearEnd > yearStart){
+            if (monthEnd > 0){
+                temp += checkMonth(monthEnd, yearEnd);
+                --monthEnd;
+
+            }else {
+                monthEnd = 12;
+                --yearEnd;
             }
-            //exit the month loop
-            endMonth = 12;
-            --endYear;
         }
-        for (int month = endMonth - startYear; month > 0; month --){
-            temp += checkMonth(endMonth, endYear);
+
+        while (monthEnd > monthStart){
+            temp += checkMonth(monthEnd, yearEnd);
+            --monthEnd;
         }
-        endDay = checkMonth(startMonth, startYear);
-        temp -= startDay;
+        //dayEnd = checkMonth(monthStart, yearStart);
+        temp -= dayStart;
 
         return temp;
     }
@@ -251,37 +223,37 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
         if (numberOffDays == 0){
             return null;
         }else if (numberOffDays == 180){
-            endMonth = startMonth + 6;
-            if (endMonth > 12){
-                endMonth -= 12;
-                endYear = startYear + 1;
-                endDay = startDay;
+            monthEnd = monthStart + 6;
+            if (monthEnd > 12){
+                monthEnd -= 12;
+                yearEnd = yearStart + 1;
+                dayEnd = dayStart;
             }else {
-                endDay = startDay;
-                endYear = startYear;
+                dayEnd = dayStart;
+                yearEnd = yearStart;
             }
         }else {
             nextCoupleDay();
         }
-        c.set(endYear, endMonth - 1, endDay);
+        c.set(yearEnd, monthEnd - 1, dayEnd);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         Date date = c.getTime();
         return dateFormat.format(date);
     }
 
     private void nextCoupleDay() {
-        endDay = startDay + numberOffDays;
-        if (endDay <= checkMonth(startMonth, startYear)){
-            endMonth = startMonth;
-            endYear = startYear;
+        dayEnd = dayStart + numberOffDays;
+        if (dayEnd <= checkMonth(monthStart, yearStart)){
+            monthEnd = monthStart;
+            yearEnd = yearStart;
         }else {
-            endDay -= checkMonth(startMonth, startYear);
-            endMonth = startMonth + 1;
-            if (endMonth > 12){
-                endMonth -= 12;
-                endYear = startYear + 1;
+            dayEnd -= checkMonth(monthStart, yearStart);
+            monthEnd = monthStart + 1;
+            if (monthEnd > 12){
+                monthEnd -= 12;
+                yearEnd = yearStart + 1;
             }else {
-                endYear = startYear;
+                yearEnd = yearStart;
             }
         }
     }
@@ -320,15 +292,15 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
     @Override
     public void onTransferSignal(String signalMessage, String message) {
         if (signalMessage.equals("startDate")) {
-            startDay = Integer.parseInt(message.substring(0, 2));
-            startMonth = Integer.parseInt(message.substring(3, 5));
-            startYear = Integer.parseInt(message.substring(6));
-            chooseStartDate.setText(message);
-            if (checkInvalidStart()) {
+            dayStart = Integer.parseInt(message.substring(0, 2));
+            monthStart = Integer.parseInt(message.substring(3, 5));
+            yearStart = Integer.parseInt(message.substring(6));
+            if (!checkValidStart(yearStart, monthStart, dayStart)) {
                 dateStartLayout.setErrorEnabled(true);
                 dateStartLayout.setError(getString(R.string.not_allowed_before_today));
                 sendRequestOffDays.setEnabled(false);
             } else {
+                chooseStartDate.setText(message);
                 sendRequestOffDays.setEnabled(true);
                 dateStartLayout.setErrorEnabled(false);
 
@@ -336,31 +308,34 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
                 chooseEndDate.setText(numberOffDay);
             }
         }else {
-            endDay = Integer.parseInt(message.substring(0, 2));
-            endMonth = Integer.parseInt(message.substring(3, 5));
-            endYear = Integer.parseInt(message.substring(6));
-            chooseEndDate.setText(message);
+            dayEnd = Integer.parseInt(message.substring(0, 2));
+            monthEnd = Integer.parseInt(message.substring(3, 5));
+            yearEnd = Integer.parseInt(message.substring(6));
 
-            if (!checkInvalidEnd()) {
+            if (chooseStartDate.getText().toString().isEmpty()){
+                dateEndLayout.setError("Please select start day off first!");
                 dateEndLayout.setErrorEnabled(true);
-                //dateEndLayout.setError(getString(R.string.not_allowed_before_today));
-                sendRequestOffDays.setEnabled(false);
-            } else {
-                //Toast.makeText(this, "Number Off Day Edit" + numberDaysOffEdit(), Toast.LENGTH_SHORT).show();
-                thanDays = numberDaysOffEdit() - numberOffDays;
-                Log.i(TAG, thanDays + "");
-                if (thanDays > 0) {
-                    textViewNumberThanOff.setVisibility(View.VISIBLE);
-                    textViewNumberThanOff.setText(String.format("%s%d%s", getString(R.string.more_than), thanDays, getString(R.string.days)));
-                }else if (thanDays < 0){
-                    textViewNumberThanOff.setVisibility(View.VISIBLE);
-                    textViewNumberThanOff.setText(String.format("%s%d%s", getString(R.string.less_than), thanDays, getString(R.string.days)));
-                }
-                sendRequestOffDays.setEnabled(true);
-                dateEndLayout.setErrorEnabled(false);
+            }else {
+                if (!checkValidEnd()) {
+                    dateEndLayout.setErrorEnabled(true);
+                    sendRequestOffDays.setEnabled(false);
+                } else {
+                    chooseEndDate.setText(message);
+                    //Toast.makeText(this, "Number Off Day Edit" + numberDaysOffEdit(), Toast.LENGTH_SHORT).show();
+                    thanDays = numberDaysOffEdit() - numberOffDays;
+                    Log.i(TAG, thanDays + "");
+                    if (thanDays > 0) {
+                        textViewNumberThanOff.setVisibility(View.VISIBLE);
+                        textViewNumberThanOff.setText(String.format("%s%d%s", getString(R.string.more_than), thanDays, getString(R.string.days)));
+                    } else if (thanDays < 0) {
+                        textViewNumberThanOff.setVisibility(View.VISIBLE);
+                        textViewNumberThanOff.setText(String.format("%s%d%s", getString(R.string.less_than), Math.abs(thanDays), getString(R.string.days)));
+                    }
+                    sendRequestOffDays.setEnabled(true);
+                    dateEndLayout.setErrorEnabled(false);
 
-                //String numberOffDay = endDayOff();
-                chooseEndDate.setText(message);
+                    chooseEndDate.setText(message);
+                }
             }
         }
     }
@@ -382,66 +357,35 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
         //chooseStartDate.setText(date);
     }
 
-    private void getTokenAdmin(){
-        DatabaseReference reference = mFireDatabase.getReference().child("token/admin@gmailcom");
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                TokenUser tokenUser = dataSnapshot.getValue(TokenUser.class);
-                if (tokenUser != null){
-                    token = tokenUser.getTokenU();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
-    private void pushNotification(String content) {
-        MyTask myTask = new MyTask(AskOffDayActivity.this);
-
-        final String BASE_URL = "https://quan-ly-nhan-vien.firebaseapp.com/api";
-        String title = "@@" + mFirebaseUser.getDisplayName();
-        content = chooseStartDate.getText().toString() + "| " + content;
-        Log.i(".AskOffDay", content);
-        String to = token;
-        String query = "{\"data\":{\"title\":\""+title +"\",\"message\":\""+ content + "\"},\"to\":\""+to+"\"}";
-        Log.i("QUERY", query);
-        myTask.execute(BASE_URL, query);
-    }
-
-    private boolean checkInvalidStart() {
+    private boolean checkValidStart(int yearStart, int monthStart, int dayStart) {
+        //get day of today
         final Calendar c = Calendar.getInstance();
         int dayNow = c.get(Calendar.DAY_OF_MONTH);
-        int monthNow = c.get(Calendar.MONTH);
+        //because month start with 0
+        int monthNow = c.get(Calendar.MONTH) + 1;
         int yearNow = c.get(Calendar.YEAR);
-        if (startYear > yearNow) {
-            return false;
-        } else if (startYear == yearNow) {
-            if (startMonth > monthNow) {
-                return false;
-            } else if (startMonth == monthNow) {
-                return startDay < dayNow;
-            } else return true;
-        } else return true;
+        if (yearStart > yearNow) {
+            return true;
+        } else if (yearStart == yearNow) {
+            if (monthStart > monthNow) {
+                return true;
+            } else if (monthStart == monthNow) {
+                return dayStart > dayNow;
+            }
+        }
+        return false;
     }
 
-    private boolean checkInvalidEnd() {
-        if (startDay == 0) {
-            return false;
-        } else {
-            if (endYear > startYear) {
+    private boolean checkValidEnd() {
+        if (yearEnd > yearStart) {
+            return true;
+        } else if (yearEnd == yearStart) {
+            if (monthEnd > monthStart) {
                 return true;
-            } else if (endYear == startYear) {
-                if (endMonth > startMonth) {
-                    return true;
-                } else if (endMonth == startMonth) {
-                    return endDay >= startDay;
-                } else return false;
+            } else if (monthEnd == monthStart) {
+                return dayEnd >= dayStart;
             } else return false;
-        }
+        } else return false;
     }
     private int checkMonth(int month, int year) {
         switch (month) {
@@ -459,7 +403,7 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             case 11: return 30;
 
             case 2:
-                if (LeapYears(year)) {
+                if (leapYears(year)) {
                     return 29;
                 } else {
                     return 28;
@@ -467,8 +411,8 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
             default: return 0;
         }
     }
-    private boolean LeapYears(int nam){
-        return (nam % 4 == 0) && (nam % 100 != 0) || (nam % 400 == 0);
+    private boolean leapYears(int year){
+        return (year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0);
     }
 
     private Task<String> addRequestOff(Map<String, Object> data) {
@@ -485,5 +429,15 @@ public class AskOffDayActivity extends AppCompatActivity implements TransferSign
                         return (String) task.getResult().getData();
                     }
                 });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (autoDateType.isPopupShowing()){
+            autoDateType.dismissDropDown();
+        }else {
+            super.onBackPressed();
+        }
+
     }
 }

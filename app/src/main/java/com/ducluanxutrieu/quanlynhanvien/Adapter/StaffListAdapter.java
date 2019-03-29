@@ -19,7 +19,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.ducluanxutrieu.quanlynhanvien.Activity.UserInfoActivity;
 import com.ducluanxutrieu.quanlynhanvien.Models.Users;
-import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -27,15 +26,11 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
-import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAdapter.ItemViewHolder> {
     private View rootView;
@@ -76,6 +71,8 @@ public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAd
                 context.startActivity(intent, options.toBundle());
             }
         });
+
+
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -122,25 +119,6 @@ public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAd
             name = itemView.findViewById(R.id.staff_name);
             avatar = itemView.findViewById(R.id.avatar);
         }
-    }
-
-    private void deleteUserFromAuth(String uid){
-        final String BASE_URL = "https://quan-ly-nhan-vien.firebaseapp.com/delete";
-        String TAG = ".EditUserActivity";
-        Log.i(TAG, BASE_URL);
-        //final String BASE_URL = "http://10.0.3.2:5000/create";
-        Map<String, String> map = new HashMap<>();
-        map.put("uid", uid);
-        JSONObject jsonObject = new JSONObject(map);
-        String query = jsonObject.toString();
-        Log.i("QUERY", query);
-        new MyTask(rootView.getContext()).execute(BASE_URL, query);
-    }
-
-    private void deleteUserFromDatabase(String email){
-        email = email.replace(".", "");
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("user/" + email);
-        reference.removeValue();
     }
 
     private Task<String> deleteUser(HashMap<String, Object> map){

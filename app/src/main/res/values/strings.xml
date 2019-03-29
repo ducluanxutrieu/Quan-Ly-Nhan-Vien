@@ -42,7 +42,7 @@
     <string name="add">Add</string>
     <string name="cancel">Cancel!</string>
     <string name="msg_token_fmt" translatable="false"> </string>
-    <string name="default_notification_channel_id" translatable="false"> </string>
+    <string name="default_notification_channel_id" translatable="false">123</string>
     <string name="your_title_task">Your title task</string>
     <string name="title">Title</string>
     <string name="content_task">Content task</string>
@@ -85,7 +85,7 @@
     <string name="not_allowed_before_today">Not allowed before today!</string>
     <string name="msg_subscribed">successful</string>
     <string name="msg_subscribe_failed">failed</string>
-    <string name="off_urgent_busy">urgent busy</string>
+    <string name="off_urgent_busy">Urgent Busy</string>
     <string name="off_sick">Sick</string>
     <string name="off_accident">Accident</string>
     <string name="off_married">Married</string>
@@ -98,10 +98,18 @@
     <string name="off_wife_gives_birth_under_32_weeks_old">Wife gives birth under 32 weeks old</string>
     <string name="off_wife_gives_birth_twins">Wifi gives birth twins</string>
     <string name="off_wife_gives_birth_twins_by_surgery">Wife gives birth twins by surgery</string>
-    <string name="more_than">More than</string>
-    <string name="less_than">Less than</string>
-    <string name="days">days</string>
+    <string name="more_than">More than </string>
+    <string name="less_than">Less than </string>
+    <string name="days"> days</string>
     <string name="send_request_successful">Send Request Off Successful!</string>
     <string name="fail_send_request_off">Fail send request off!</string>
     <string name="request_for_off_days">Request For Off Days</string>
+    <string name="start_date_off">Start date off</string>
+    <string name="off_type">Off type</string>
+    <string name="reason">Reason:</string>
+    <string name="note">Note:</string>
+    <string name="accept">Accept</string>
+    <string name="reply">Reply</string>
+    <string name="denied_user_off">Denied user off!</string>
+    <string name="end_date_off">End date off</string>
 </resources>

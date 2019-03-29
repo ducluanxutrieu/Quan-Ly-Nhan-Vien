@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 
 import com.ducluanxutrieu.quanlynhanvien.Activity.TaskDetailActivity;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.TaskAdapter;
-import com.ducluanxutrieu.quanlynhanvien.Models.Task;
+import com.ducluanxutrieu.quanlynhanvien.Models.Tasks;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,7 +29,7 @@ import java.util.List;
 public class TasksFragment extends Fragment {
     RecyclerView mRecyclerViewTask;
     TaskAdapter mTaskAdapter;
-    List<Task> taskList;
+    List<Tasks> taskList;
     FloatingActionButton fab;
     FirebaseAuth mFirebaseAuth;
     FirebaseUser mFirebaseUser;
@@ -71,9 +71,9 @@ public class TasksFragment extends Fragment {
     public void onStart() {
         super.onStart();
         Query query = FirebaseDatabase.getInstance().getReference().child("task/" + rooUid);
-        FirebaseRecyclerOptions.Builder<Task> builder = new FirebaseRecyclerOptions.Builder<>();
-        builder.setQuery(query, Task.class);
-        FirebaseRecyclerOptions<Task> options = builder.build();
+        FirebaseRecyclerOptions.Builder<Tasks> builder = new FirebaseRecyclerOptions.Builder<>();
+        builder.setQuery(query, Tasks.class);
+        FirebaseRecyclerOptions<Tasks> options = builder.build();
         mTaskAdapter = new TaskAdapter(options);
         mTaskAdapter.startListening();
         LinearLayoutManager layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);

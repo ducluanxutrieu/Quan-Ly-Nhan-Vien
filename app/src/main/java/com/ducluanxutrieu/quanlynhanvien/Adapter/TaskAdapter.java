@@ -10,15 +10,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ducluanxutrieu.quanlynhanvien.Activity.TaskDetailActivity;
-import com.ducluanxutrieu.quanlynhanvien.Models.Task;
+import com.ducluanxutrieu.quanlynhanvien.Models.Tasks;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
-public class TaskAdapter extends FirebaseRecyclerAdapter<Task, TaskAdapter.ItemViewHolder> {
+public class TaskAdapter extends FirebaseRecyclerAdapter<Tasks, TaskAdapter.ItemViewHolder> {
     private Context context;
 
-    public TaskAdapter(@NonNull FirebaseRecyclerOptions<Task> options) {
+    public TaskAdapter(@NonNull FirebaseRecyclerOptions<Tasks> options) {
         super(options);
     }
 
@@ -31,7 +31,8 @@ public class TaskAdapter extends FirebaseRecyclerAdapter<Task, TaskAdapter.ItemV
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ItemViewHolder holder, final int position, @NonNull final Task model) {
+    protected void onBindViewHolder(@NonNull ItemViewHolder holder, int position, @NonNull final Tasks model) {
+        final int i = position;
         holder.taskContent.setText(model.getTaskContent());
         holder.taskTitle.setText(model.getTaskTitle());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -40,7 +41,7 @@ public class TaskAdapter extends FirebaseRecyclerAdapter<Task, TaskAdapter.ItemV
                 Intent intent = new Intent(context, TaskDetailActivity.class);
                 intent.putExtra("task", model);
                 intent.putExtra("signal", "edit");
-                intent.putExtra("key", model.getKeyTask());
+                intent.putExtra("key", getRef(i).getKey());
                 v.getContext().startActivity(intent);
             }
         });

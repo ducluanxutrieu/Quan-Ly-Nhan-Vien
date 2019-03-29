@@ -217,8 +217,10 @@ public class EditUserActivity extends AppCompatActivity {
             map.put("password", mPassword);
         }
         if (users != null){
-            map.put("uid", users.getUid());
+            map.put("uidFriend", users.getUid());
             map.put("avatarUrl", users.getAvatarUrl());
+        }else {
+            map.put("avatarUrl", "https://firebasestorage.googleapis.com/v0/b/quan-ly-nhan-vien.appspot.com/o/585e4bf3cb11b227491c339a.png?alt=media&token=01b70fd2-2eb0-4afb-a7e0-864be1a874d9");
         }
         return map;
     }

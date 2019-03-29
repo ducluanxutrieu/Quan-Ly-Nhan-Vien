@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardElevation="@dimen/_4sdp"
-    app:cardCornerRadius="@dimen/_4sdp"
+    app:cardCornerRadius="@dimen/_15sdp"
     android:layout_marginTop="@dimen/margin_item"
     >
     <LinearLayout
@@ -14,7 +14,6 @@
         android:layout_marginStart="@dimen/margin_vertical"
         android:layout_marginEnd="@dimen/margin_vertical"
         >
-
         <TextView
             android:id="@+id/task_title"
             android:layout_width="wrap_content"
