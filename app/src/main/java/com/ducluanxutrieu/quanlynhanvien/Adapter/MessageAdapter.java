@@ -2,7 +2,6 @@ package com.ducluanxutrieu.quanlynhanvien.Adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,8 +56,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<MessageItem, Message
     @Override
     protected void onBindViewHolder(@NonNull ItemViewHolder holder, int position, @NonNull MessageItem model) {
         holder.contentItemMessage.setText(model.getText());
-        //holder.nameItemMessage.setText(model.getName());
-        holder.timeStampMessage.setText(model.getTimeStamp());
+        holder.nameItemMessage.setText(model.getName());
     }
 
     @Override
@@ -77,13 +75,14 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<MessageItem, Message
 
 
     class ItemViewHolder extends RecyclerView.ViewHolder{
-        TextView nameItemMessage, contentItemMessage, timeStampMessage;
+        TextView nameItemMessage, contentItemMessage;
 
         ItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            //nameItemMessage = itemView.findViewById(R.id.sender_text_view);
-            contentItemMessage = itemView.findViewById(R.id.message_text_view);
-            timeStampMessage = itemView.findViewById(R.id.timestamp_text_view);
+            nameItemMessage = itemView.findViewById(R.id.name_item_message);
+            contentItemMessage = itemView.findViewById(R.id.content_item_message);
         }
+
     }
+
 }

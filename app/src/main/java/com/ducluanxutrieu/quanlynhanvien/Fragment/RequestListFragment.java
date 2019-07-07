@@ -49,7 +49,6 @@ public class RequestListFragment extends Fragment {
         mRecyclerView.setAdapter(mRequestAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.smoothScrollToPosition(0);
     }
 
     @Override

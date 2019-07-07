@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,38 +11,33 @@
         android:layout_alignParentTop="true"
         android:layout_above="@id/linear_button"
         >
-
-        <android.support.design.widget.TextInputLayout
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/your_title_task"
+            android:layout_marginStart="@dimen/margin_vertical"
+            />
+        <EditText
+            android:id="@+id/input_title_task_edit_activity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:helperText="Requited!"
-            android:layout_margin="@dimen/margin_item"
-            >
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_title_task_edit_activity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/your_title_task"
-                />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
+            android:autofillHints="@string/title"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/content_task"
+            android:layout_marginStart="@dimen/margin_vertical"
+            android:layout_marginTop="@dimen/margin_top_content_task"
+            />
+        <EditText
+            android:id="@+id/input_content_task_edit_text_activity"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_margin="@dimen/margin_item"
-            >
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_content_task_edit_text_activity"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="top|start"
-                android:scrollbars="vertical"
-                android:inputType="textMultiLine"
-                android:hint="@string/content_task"
-                />
-        </android.support.design.widget.TextInputLayout>
+            android:scrollbars="vertical"
+            android:gravity="top|start"
+            android:inputType="textMultiLine"
+            />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,22 +47,20 @@
         android:orientation="horizontal"
         android:gravity="end"
         >
-        <android.support.design.button.MaterialButton
+        <Button
             android:id="@+id/btn_cancel_task_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel"
             android:layout_margin="@dimen/margin_vertical"
-            app:cornerRadius="@dimen/_15sdp"
             />
-        <android.support.design.button.MaterialButton
+        <Button
             android:id="@+id/btn_save_task_activity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add"
             android:layout_margin="@dimen/margin_vertical"
             android:enabled="false"
-            app:cornerRadius="@dimen/_100sdp"
             />
     </LinearLayout>
 </RelativeLayout>

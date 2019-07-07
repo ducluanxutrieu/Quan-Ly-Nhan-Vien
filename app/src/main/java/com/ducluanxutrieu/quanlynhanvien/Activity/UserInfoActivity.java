@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,8 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserInfoActivity extends AppCompatActivity {
-    TextInputEditText phone, email, position, numberOffDays;
-    TextView name;
+    TextView phone, email, position, numberOffDays, name;
     ImageView imageProfile;
     Users users;
     DatabaseReference mDatabaseReference;
@@ -77,7 +75,7 @@ public class UserInfoActivity extends AppCompatActivity {
                             daysOffDeny ++;
                         }
                         Log.i(TAG, requestItemList.get(0).toString());
-                        numberOffDays.setText(requestItemList.size() + "");
+                        numberOffDays.setText(getString(R.string.number_off_days) + requestItemList.size());
                     }
                 }
 
@@ -104,7 +102,7 @@ public class UserInfoActivity extends AppCompatActivity {
             mDatabaseReference.addChildEventListener(mChildEventListener);
         }
 
-        numberOffDays.setText(requestItemList.size() + "");
+        numberOffDays.setText(getString(R.string.number_off_days) + requestItemList.size());
     }
 
 
@@ -119,9 +117,9 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void show() {
-        email.setText(users.getEmail());
-        position.setText(users.getPosition());
-        phone.setText(users.getPhone());
+        email.setText(String.format("Email: %s", users.getEmail()));
+        position.setText(String.format("%s: %s", getString(R.string.position_in_company), users.getPosition()));
+        phone.setText(String.format("%s: %s", getString(R.string.phone_number), users.getPhone()));
         name.setText(users.getName());
         Glide.with(UserInfoActivity.this).load(users.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(imageProfile);
     }

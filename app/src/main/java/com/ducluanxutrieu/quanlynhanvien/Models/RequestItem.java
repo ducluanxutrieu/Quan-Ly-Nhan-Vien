@@ -13,7 +13,6 @@ public class RequestItem implements Serializable {
     private boolean accept;
     private String requestKey;
     private String uid;
-    private String note;
 
     public RequestItem() {
     }
@@ -108,13 +107,5 @@ public class RequestItem implements Serializable {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
     }
 }

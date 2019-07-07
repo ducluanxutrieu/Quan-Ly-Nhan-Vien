@@ -13,7 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
-            app:srcCompat="@mipmap/header" />
+            app:srcCompat="@mipmap/header"
+            android:contentDescription="@string/todo" />
 
         <ImageView
             android:id="@+id/user_profile_photo"
@@ -27,7 +28,7 @@
             android:scaleType="centerInside"
             app:srcCompat="@drawable/girl"
             android:foreground="@drawable/bg_circle_blue"
-            />
+            android:contentDescription="@string/todo" />
 
         <RelativeLayout
             android:id="@+id/profile_layout"

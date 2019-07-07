@@ -5,13 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.DepthTransformation;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.FriendsListFragment;
@@ -20,7 +19,6 @@ import com.ducluanxutrieu.quanlynhanvien.Fragment.StaffListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.TasksFragment;
 import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
-import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.PushNotificationManager;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.ducluanxutrieu.quanlynhanvien.Models.Users;
@@ -48,18 +46,17 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
     private ViewPagerAdapter mViewPagerAdapter;
 
     private DatabaseReference mUsersReference;
-    static DatabaseReference mFriendReference;
+    private DatabaseReference mFriendReference;
     private FirebaseAuth mFirebaseAuth;
-    private static FirebaseUser mFireUser;
+    private FirebaseUser mFireUser;
 
     private boolean isUserAdmin = false;
-    static boolean userAlreadyFriend = false;
+    private boolean userAlreadyFriend = false;
 
-    private static String rootUid;
+    private String rootUid;
     private Users userAdmin;
 
     static private final String TAG = "MainActivity";
-    //MyTask myTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
 
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
-
+        PushNotificationManager.getInstance().init(this);
         mViewPager = findViewById(R.id.view_pager);
         mTabLayout = findViewById(R.id.tab_layout);
         toolbar = findViewById(R.id.toolbar_main);
@@ -182,61 +179,74 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
                 Intent intent = new Intent(MainActivity.this, UserInfoActivity.class);
                 intent.putExtra("user", userAdmin);
                 startActivity(intent);
-                break;
             }
             case R.id.ask_for_day_off: {
                 Intent intent = new Intent(MainActivity.this, AskOffDayActivity.class);
                 startActivity(intent);
-                break;
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onTransferSignal(String signalMessage, String email) {
-        if (signalMessage.equals("AddFriend")) {
-            FriendsListFragment friendListFragment = (FriendsListFragment) mViewPagerAdapter.getItem(0);
-            friendListFragment.getEmailFriend(email);
-        }
-    }
+    public void onTransferSignal(String signalMessage, String uid) {
+        if (signalMessage.equals("AddFriend")){
+                checkFriendAlreadyExist(uid);
+                if (!userAlreadyFriend) {
+                    try {
+                    mFriendReference.child("users/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Users users = dataSnapshot.getValue(Users.class);
+                            if (users != null) {
+                                String name = users.getName();
+                                String uid = users.getUid();
+                                if (name != null && uid != null) {
+                                    Friend friend = new Friend(users.getName(), users.getUid(), "", users.getAvatarUrl());
+                                    mFriendReference.child("friend_ship/" + mFireUser.getUid() + "/" + uid).setValue(friend);
+                                    Toast.makeText(getApplicationContext(), "Add " + friend.getName() + " successful", Toast.LENGTH_LONG).show();
 
-    private void getUser(String email) {
-
-        MyTask task = new MyTask(MainActivity.this);
-
-        final String BASE_URL = "https://quan-ly-nhan-vien.firebaseapp.com/api";
-        //final String BASE_URL = "http://localhost:5000/api";
-
-        String query = "{\"data\":{\"email\":\""+email +"\"}}";
-        Log.i("QUERY", query);
-        task.execute(BASE_URL, query);
-    }
-
-    /*public static void getUidFromServer(String uid){
-        if (checkFriendAlreadyExist(uid)) {
-            try {
-                mFriendReference.child("users/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Users users = dataSnapshot.getValue(Users.class);
-                        if (users != null) {
-                            String name = users.getName();
-                            String uid = users.getUid();
-                            if (name != null && uid != null) {
-                                Friend friend = new Friend(users.getName(), users.getUid(), "", users.getAvatarUrl());
-                                mFriendReference.child("friend_ship/" + mFireUser.getUid() + "/" + uid).setValue(friend);
+                                }
+                            }else {
+                                Toast.makeText(MainActivity.this, "Could't find your friend!", Toast.LENGTH_LONG).show();
                             }
                         }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+
+                    });
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        Toast.makeText(MainActivity.this, "Could't find your friend!", Toast.LENGTH_LONG).show();
                     }
-                });
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+                }else {
+                    Toast.makeText(MainActivity.this, "Your friend already exist!", Toast.LENGTH_LONG).show();
+                }
         }
-    }*/
+    }
+
+
+    private void checkFriendAlreadyExist(String s1) {
+        try {
+            mFriendReference.child("friend_ship/" + rootUid + "/" + s1).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Friend friend = dataSnapshot.getValue(Friend.class);
+
+                    //userAlready = false if friend == null
+                    userAlreadyFriend = friend != null;
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+            userAlreadyFriend = false;
+        }
+    }
 }

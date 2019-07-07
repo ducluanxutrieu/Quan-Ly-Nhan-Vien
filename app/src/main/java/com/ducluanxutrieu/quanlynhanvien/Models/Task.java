@@ -2,15 +2,15 @@ package com.ducluanxutrieu.quanlynhanvien.Models;
 
 import java.io.Serializable;
 
-public class Tasks implements Serializable {
+public class Task implements Serializable {
     private String taskContent;
     private String taskTitle;
     private String keyTask;
 
-    public Tasks() {
+    public Task() {
     }
 
-    public Tasks(String taskTitle, String taskContent)  {
+    public Task(String taskTitle, String taskContent)  {
         this.taskContent = taskContent;
         this.taskTitle = taskTitle;
     }

@@ -1,38 +1,21 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="height_content_size">@dimen/_200sdp</dimen>
-
-
-    <dimen name="activity_horizontal_margin">@dimen/_16sdp</dimen>
-    <dimen name="activity_vertical_margin">@dimen/_16sdp</dimen>
-    <dimen name="nav_header_vertical_spacing">@dimen/_8sdp</dimen>
-    <dimen name="nav_header_height">@dimen/_176sdp</dimen>
-    <dimen name="fab_margin">@dimen/_16sdp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
     <dimen name="avatar_size">@dimen/_30sdp</dimen>
-    <dimen name="margin_vertical">@dimen/_10sdp</dimen>
-    <dimen name="width_input_dialog">@dimen/_150sdp</dimen>
+    <dimen name="margin_vertical">10dp</dimen>
+    <dimen name="width_input_dialog">150dp</dimen>
     <dimen name="margin_item">@dimen/_5sdp</dimen>
-    <dimen name="send_button_size">@dimen/_50sdp</dimen>
-    <dimen name="app_bar_height">@dimen/_200sdp</dimen>
-    <dimen name="text_size">@dimen/_25ssp</dimen>
-    <dimen name="margin_horizontal_message">@dimen/_100sdp</dimen>
-    <dimen name="evolation_item">@dimen/_4sdp</dimen>
-    <dimen name="margin_top_content_task">@dimen/_20sdp</dimen>
-    <dimen name="progress_bar_size">@dimen/_30sdp</dimen>
-    <dimen name="calendar_size_show">@dimen/_20ssp</dimen>
-    <dimen name="margin_top_content">@dimen/_20sdp</dimen>
-
-    <dimen name="max_chat_bubble_length">@dimen/_300sdp</dimen>
-    <dimen name="default_input_text_size">@dimen/_16ssp</dimen>
-    <dimen name="default_message_text_size">@dimen/_14ssp</dimen>
-    <dimen name="default_timestamp_text_size">@dimen/_10ssp</dimen>
-
-    //Off day
-    <dimen name="default_content_off_day">@dimen/height_content_size</dimen>
-    <dimen name="default_padding">@dimen/_10sdp</dimen>
-    <dimen name="icon_size">@dimen/_30sdp</dimen>
-    <dimen name="big_title_text_size">@dimen/_30ssp</dimen>
-
-    <dimen name="helper_text">@dimen/_8ssp</dimen>
-
+    <dimen name="send_button_size">50dp</dimen>
+    <dimen name="app_bar_height">200dp</dimen>
+    <dimen name="text_size">25sp</dimen>
+    <dimen name="margin_horizontal_message">100dp</dimen>
+    <dimen name="evolation_item">4dp</dimen>
+    <dimen name="margin_top_content_task">20dp</dimen>
+    <dimen name="progress_bar_size">30dp</dimen>
+    <dimen name="calendar_size_show">20sp</dimen>
+    <dimen name="margin_top_content">20dp</dimen>
 </resources>

@@ -4,7 +4,6 @@ public class MessageItem {
     private String text;
     private String name;
     private String photoUrl;
-    private String timeStamp;
 
     public MessageItem() {
     }
@@ -39,11 +38,4 @@ public class MessageItem {
         this.photoUrl = photoUrl;
     }
 
-    public String getTimeStamp() {
-        return timeStamp;
-    }
-
-    public void setTimeStamp(String timeStamp) {
-        this.timeStamp = timeStamp;
-    }
 }
