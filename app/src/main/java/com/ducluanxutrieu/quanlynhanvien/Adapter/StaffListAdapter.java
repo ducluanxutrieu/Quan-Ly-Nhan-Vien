@@ -18,7 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.ducluanxutrieu.quanlynhanvien.Activity.UserInfoActivity;
-import com.ducluanxutrieu.quanlynhanvien.Models.Users;
+import com.ducluanxutrieu.quanlynhanvien.Models.Staff;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -26,20 +26,22 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableResult;
 
 
 import java.util.HashMap;
 
-public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAdapter.ItemViewHolder> {
+public class StaffListAdapter extends FirebaseRecyclerAdapter<Staff, StaffListAdapter.ItemViewHolder> {
     private View rootView;
+
 
     //Firebase
     private FirebaseFunctions mFunction;
 
     private final static String TAG = ".StaffList";
-    public StaffListAdapter(@NonNull FirebaseRecyclerOptions<Users> options) {
+    public StaffListAdapter(@NonNull FirebaseRecyclerOptions<Staff> options) {
         super(options);
     }
 
@@ -55,7 +57,7 @@ public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAd
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull final ItemViewHolder holder, final int position, @NonNull final Users model) {
+    protected void onBindViewHolder(@NonNull final ItemViewHolder holder, final int position, @NonNull final Staff model) {
         holder.name.setText(model.getName());
         holder.position.setText(model.getPosition());
         Glide.with(rootView).load(model.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(holder.avatar);
@@ -109,6 +111,15 @@ public class StaffListAdapter extends FirebaseRecyclerAdapter<Users, StaffListAd
             }
         });
     }
+
+
+    public Context getContext() {
+        return rootView.getContext();
+    }
+
+//    public View getView() {
+//        return rootView;
+//    }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView name, position;

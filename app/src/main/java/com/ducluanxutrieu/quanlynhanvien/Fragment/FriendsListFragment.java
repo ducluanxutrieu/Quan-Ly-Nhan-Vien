@@ -1,17 +1,22 @@
 package com.ducluanxutrieu.quanlynhanvien.Fragment;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.ducluanxutrieu.quanlynhanvien.Activity.MainActivity;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.FriendsListAdapter;
 import com.ducluanxutrieu.quanlynhanvien.Dialog.AddNewFriend;
 import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
@@ -93,7 +98,6 @@ public class FriendsListFragment extends Fragment {
     public void getEmailFriend(String email){
         if (checkFriendAlreadyExist(email)){
             Toast.makeText(getContext(), "This friend already exist!", Toast.LENGTH_SHORT).show();
-            return;
         }else {
             addFriend(email).addOnSuccessListener(new OnSuccessListener<String>() {
                 @Override
@@ -169,11 +173,55 @@ public class FriendsListFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerViewFriends.setLayoutManager(layoutManager);
         mRecyclerViewFriends.setAdapter(mFriendsAdapter);
+
+        //Enable swipe left or right to delete an item
+        enableSwipe();
+
+        MainActivity.mCatView.dismiss();
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mFriendsAdapter.stopListening();
+    }
+
+    private void enableSwipe() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+                final int position = viewHolder.getAdapterPosition();
+                if (i ==  ItemTouchHelper.LEFT || i == ItemTouchHelper.RIGHT) {
+                final Friend friend = mFriendsAdapter.getItem(position);
+                final String key = mFriendsAdapter.getRef(position).getKey();
+                mFriendsAdapter.getRef(position).removeValue();
+                    Snackbar snackbar = (Snackbar) Snackbar.make(getView(), "Removed a friend.", Snackbar.LENGTH_LONG);
+                    snackbar.setAction("UNDO", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mFriendsAdapter.restoreItem(friend, key);
+                        }
+                    });
+                    snackbar.setActionTextColor(Color.YELLOW);
+                    snackbar.show();
+                }
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                getDefaultUIUtil().onDraw(c, recyclerView,
+                        viewHolder.itemView, dX, dY,
+                        actionState, isCurrentlyActive);
+            }
+
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerViewFriends);
     }
 }

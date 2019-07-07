@@ -15,8 +15,8 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.ducluanxutrieu.quanlynhanvien.Models.RequestItem;
+import com.ducluanxutrieu.quanlynhanvien.Models.Staff;
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Models.Users;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,7 +30,7 @@ public class UserInfoActivity extends AppCompatActivity {
     TextInputEditText phone, email, position, numberOffDays;
     TextView name;
     ImageView imageProfile;
-    Users users;
+    Staff staff;
     DatabaseReference mDatabaseReference;
     List<RequestItem> requestItemList;
     ChildEventListener mChildEventListener;
@@ -44,7 +44,7 @@ public class UserInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_info);
         final Intent intent = getIntent();
-        users = (Users) intent.getSerializableExtra("user");
+        staff = (Staff) intent.getSerializableExtra("user");
         isAdmin = intent.getBooleanExtra("isAdmin", false);
 
         mapping();
@@ -53,7 +53,7 @@ public class UserInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent1 = new Intent(UserInfoActivity.this, EditUserActivity.class);
-                intent1.putExtra("user", users);
+                intent1.putExtra("user", staff);
                 intent1.putExtra("signal", "updateUser");
                 intent1.putExtra("isAdmin", isAdmin);
                 startActivity(intent1);
@@ -61,7 +61,7 @@ public class UserInfoActivity extends AppCompatActivity {
         });
 
         show();
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("day_off/" + users.getUid());
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("day_off/" + staff.getUid());
         requestItemList = new ArrayList<>();
 
         if (mChildEventListener == null){
@@ -119,10 +119,10 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void show() {
-        email.setText(users.getEmail());
-        position.setText(users.getPosition());
-        phone.setText(users.getPhone());
-        name.setText(users.getName());
-        Glide.with(UserInfoActivity.this).load(users.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(imageProfile);
+        email.setText(staff.getEmail());
+        position.setText(staff.getPosition());
+        phone.setText(staff.getPhone());
+        name.setText(staff.getName());
+        Glide.with(UserInfoActivity.this).load(staff.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(imageProfile);
     }
 }

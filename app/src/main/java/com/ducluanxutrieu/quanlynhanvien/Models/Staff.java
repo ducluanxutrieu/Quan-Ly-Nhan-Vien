@@ -2,7 +2,7 @@ package com.ducluanxutrieu.quanlynhanvien.Models;
 
 import java.io.Serializable;
 
-public class Users implements Serializable {
+public class Staff implements Serializable {
     private String name;
     private String email;
     private String phone;
@@ -12,7 +12,7 @@ public class Users implements Serializable {
     private String avatarUrl;
     private String password;
 
-    public Users(String name, String email, String phone, String position, String uid, String avatarUrl, String password, boolean admin) {
+    public Staff(String name, String email, String phone, String position, String uid, String avatarUrl, String password, boolean admin) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -23,7 +23,7 @@ public class Users implements Serializable {
         this.admin = admin;
     }
 
-    public Users() {
+    public Staff() {
     }
 
     public String getName() {

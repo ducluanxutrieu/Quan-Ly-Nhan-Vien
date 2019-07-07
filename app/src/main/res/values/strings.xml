@@ -112,4 +112,5 @@
     <string name="reply">Reply</string>
     <string name="denied_user_off">Denied user off!</string>
     <string name="end_date_off">End date off</string>
+    <string name="email">Email:</string>
 </resources>

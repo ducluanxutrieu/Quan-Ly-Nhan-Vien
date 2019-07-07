@@ -18,8 +18,12 @@ import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class FriendsListAdapter extends FirebaseRecyclerAdapter<Friend, FriendsListAdapter.ItemViewHolder> {
+    private View rootView;
 
     public FriendsListAdapter(@NonNull FirebaseRecyclerOptions<Friend> options) {
         super(options);
@@ -30,9 +34,9 @@ public class FriendsListAdapter extends FirebaseRecyclerAdapter<Friend, FriendsL
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view = inflater.inflate(R.layout.item_friend, viewGroup, false);
+        rootView = inflater.inflate(R.layout.item_friend, viewGroup, false);
 
-        return new ItemViewHolder(view);
+        return new ItemViewHolder(rootView);
     }
 
     @Override
@@ -56,6 +60,27 @@ public class FriendsListAdapter extends FirebaseRecyclerAdapter<Friend, FriendsL
             }
         });
     }
+
+    public Context getContext() {
+        while (rootView.getContext() == null){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return rootView.getContext();
+    }
+
+    public void restoreItem(Friend friend, String key) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        reference.child("friend_ship/" + FirebaseAuth.getInstance().getUid() + "/" + key).setValue(friend);
+    }
+
+
+//    public View getView() {
+//        return rootView;
+//    }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
         TextView nameMessage;

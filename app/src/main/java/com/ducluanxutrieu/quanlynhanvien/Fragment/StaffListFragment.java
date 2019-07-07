@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,7 @@ import com.ducluanxutrieu.quanlynhanvien.Activity.EditUserActivity;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.StaffListAdapter;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Models.Users;
+import com.ducluanxutrieu.quanlynhanvien.Models.Staff;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -29,7 +30,7 @@ import java.util.List;
 public class StaffListFragment extends Fragment {
     RecyclerView mRecyclerViewStaff;
     StaffListAdapter mStaffListAdapter;
-    List<Users> usersList;
+    List<Staff> staffList;
     TransferSignal mTransferSignal;
     private FloatingActionButton fab;
 
@@ -56,7 +57,7 @@ public class StaffListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        usersList = new ArrayList<>();
+        staffList = new ArrayList<>();
     }
 
     @Override
@@ -75,10 +76,10 @@ public class StaffListFragment extends Fragment {
         super.onStart();
 
         Query query = FirebaseDatabase.getInstance().getReference().child("users").limitToLast(50);
-        FirebaseRecyclerOptions.Builder<Users> usersBuilder = new FirebaseRecyclerOptions.Builder<>();
-        usersBuilder.setQuery(query, Users.class);
+        FirebaseRecyclerOptions.Builder<Staff> usersBuilder = new FirebaseRecyclerOptions.Builder<>();
+        usersBuilder.setQuery(query, Staff.class);
 
-        FirebaseRecyclerOptions<Users> options = usersBuilder.build();
+        FirebaseRecyclerOptions<Staff> options = usersBuilder.build();
         mStaffListAdapter = new StaffListAdapter(options);
 
         mStaffListAdapter.startListening();
@@ -87,6 +88,8 @@ public class StaffListFragment extends Fragment {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         mRecyclerViewStaff.setLayoutManager(layoutManager);
         mRecyclerViewStaff.setAdapter(mStaffListAdapter);
+//        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new StaffSwipeToDeleteCallback(mStaffListAdapter));
+//        itemTouchHelper.attachToRecyclerView(mRecyclerViewStaff);
     }
 
     @Override

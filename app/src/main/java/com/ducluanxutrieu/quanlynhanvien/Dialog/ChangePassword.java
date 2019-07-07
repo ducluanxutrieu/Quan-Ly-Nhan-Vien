@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
-import com.ducluanxutrieu.quanlynhanvien.Models.Users;
+import com.ducluanxutrieu.quanlynhanvien.Models.Staff;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -40,7 +40,7 @@ public class ChangePassword extends DialogFragment {
 
     public String password, email;
     View view;
-    Users users;
+    Staff staff;
 
     @NonNull
     @Override
@@ -59,9 +59,9 @@ public class ChangePassword extends DialogFragment {
         mReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                users = dataSnapshot.getValue(Users.class);
-                if (users != null){
-                    email = users.getEmail();
+                staff = dataSnapshot.getValue(Staff.class);
+                if (staff != null){
+                    email = staff.getEmail();
                 }else {
                     Toast.makeText(view.getContext(), getString(R.string.can_not_change_password), Toast.LENGTH_SHORT).show();
                     dismiss();
@@ -99,7 +99,7 @@ public class ChangePassword extends DialogFragment {
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(view.getContext(), getString(R.string.update_user_successful), Toast.LENGTH_SHORT).show();
-                                                mReference.setValue(users);
+                                                mReference.setValue(staff);
                                                 dismiss();
                                             } else {
                                                 Toast.makeText(view.getContext(), getString(R.string.error_password_not_update), Toast.LENGTH_SHORT).show();

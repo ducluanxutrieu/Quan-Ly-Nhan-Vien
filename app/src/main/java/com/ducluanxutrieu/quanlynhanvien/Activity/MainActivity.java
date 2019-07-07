@@ -1,11 +1,9 @@
 package com.ducluanxutrieu.quanlynhanvien.Activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,12 +16,11 @@ import com.ducluanxutrieu.quanlynhanvien.Fragment.FriendsListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.RequestListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.StaffListFragment;
 import com.ducluanxutrieu.quanlynhanvien.Fragment.TasksFragment;
-import com.ducluanxutrieu.quanlynhanvien.Models.Friend;
 import com.ducluanxutrieu.quanlynhanvien.Interface.TransferSignal;
+import com.ducluanxutrieu.quanlynhanvien.Models.Staff;
 import com.ducluanxutrieu.quanlynhanvien.MyTask;
 import com.ducluanxutrieu.quanlynhanvien.PushNotificationManager;
 import com.ducluanxutrieu.quanlynhanvien.R;
-import com.ducluanxutrieu.quanlynhanvien.Models.Users;
 import com.ducluanxutrieu.quanlynhanvien.Adapter.ViewPagerAdapter;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -37,6 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.roger.catloadinglibrary.CatLoadingView;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -50,15 +48,17 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
     private DatabaseReference mUsersReference;
     static DatabaseReference mFriendReference;
     private FirebaseAuth mFirebaseAuth;
-    private static FirebaseUser mFireUser;
 
     private boolean isUserAdmin = false;
-    static boolean userAlreadyFriend = false;
 
     private static String rootUid;
-    private Users userAdmin;
+    private Staff userAdmin;
 
     static private final String TAG = "MainActivity";
+
+    //Cat loading
+    static public CatLoadingView mCatView;
+
     //MyTask myTask;
 
     @Override
@@ -66,9 +66,9 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ProgressDialog startDialog = new ProgressDialog(MainActivity.this);
-        startDialog.setTitle(getString(R.string.loading));
-        startDialog.show();
+        //Show cat loading
+        mCatView = new CatLoadingView();
+        mCatView.show(getSupportFragmentManager(), "Show in main activity");
 
         Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
         mUsersReference = mFirebaseDatabase.getReference();
         mFriendReference = mFirebaseDatabase.getReference();
         mFirebaseAuth = FirebaseAuth.getInstance();
-        mFireUser = mFirebaseAuth.getCurrentUser();
+        FirebaseUser mFireUser = mFirebaseAuth.getCurrentUser();
 
         //pushNotification to
         PushNotificationManager.getInstance().init(this);
@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
             checkAdmin();
         }
 
-        startDialog.dismiss();
 
         GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(MainActivity.this);
 
@@ -133,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
         oneItemValue.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userAdmin = dataSnapshot.getValue(Users.class);
+                userAdmin = dataSnapshot.getValue(Staff.class);
                 isUserAdmin = userAdmin.isAdmin();
                 if (isUserAdmin) {
                     mViewPagerAdapter.addFragment(new StaffListFragment());
@@ -216,15 +215,15 @@ public class MainActivity extends AppCompatActivity implements TransferSignal {
     /*public static void getUidFromServer(String uid){
         if (checkFriendAlreadyExist(uid)) {
             try {
-                mFriendReference.child("users/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                mFriendReference.child("staff/" + uid).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Users users = dataSnapshot.getValue(Users.class);
-                        if (users != null) {
-                            String name = users.getName();
-                            String uid = users.getUid();
+                        Staff staff = dataSnapshot.getValue(Staff.class);
+                        if (staff != null) {
+                            String name = staff.getName();
+                            String uid = staff.getUid();
                             if (name != null && uid != null) {
-                                Friend friend = new Friend(users.getName(), users.getUid(), "", users.getAvatarUrl());
+                                Friend friend = new Friend(staff.getName(), staff.getUid(), "", staff.getAvatarUrl());
                                 mFriendReference.child("friend_ship/" + mFireUser.getUid() + "/" + uid).setValue(friend);
                             }
                         }

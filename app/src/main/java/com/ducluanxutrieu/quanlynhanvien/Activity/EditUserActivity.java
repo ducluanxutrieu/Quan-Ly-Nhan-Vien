@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.ducluanxutrieu.quanlynhanvien.Models.Users;
+import com.ducluanxutrieu.quanlynhanvien.Models.Staff;
 import com.ducluanxutrieu.quanlynhanvien.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,7 +43,7 @@ public class EditUserActivity extends AppCompatActivity {
     Button add, cancel;
     String signal;
     boolean isAdmin;
-    Users users;
+    Staff staff;
     ImageView avatar;
 
     String mName = "";
@@ -59,7 +59,7 @@ public class EditUserActivity extends AppCompatActivity {
     private static final int IMAGE_REQUEST = 1;
     private static final String TAG = "kiemtra";
     private Uri uriImage;
-    private StorageTask uploadTask;
+    private UploadTask uploadTask;
 
     ProgressDialog pd;
 
@@ -79,7 +79,7 @@ public class EditUserActivity extends AppCompatActivity {
 
         //get Data and signal from parent activity
         Intent intent = getIntent();
-        users = (Users) intent.getSerializableExtra("user");
+        staff = (Staff) intent.getSerializableExtra("user");
         signal = intent.getStringExtra("signal");
         isAdmin = intent.getBooleanExtra("isAdmin", false);
 
@@ -87,25 +87,25 @@ public class EditUserActivity extends AppCompatActivity {
 
         if (signal.equals("updateUser")){
             avatar.setEnabled(true);
-            mStorageReference = FirebaseStorage.getInstance().getReference().child("Users/" + users.getUid() + "/avatar");
-            if (users.getName() != null) {
-                name.setText(users.getName());
+            mStorageReference = FirebaseStorage.getInstance().getReference().child("Staff/" + staff.getUid() + "/avatar");
+            if (staff.getName() != null) {
+                name.setText(staff.getName());
             }
-            if (users.getEmail() != null) {
-                email.setText(users.getEmail());
+            if (staff.getEmail() != null) {
+                email.setText(staff.getEmail());
             }
-            if (users.getPhone() != null) {
-                phone.setText(users.getPhone());
+            if (staff.getPhone() != null) {
+                phone.setText(staff.getPhone());
             }
-            if (users.getPosition() != null) {
-                position.setText(users.getPosition());
+            if (staff.getPosition() != null) {
+                position.setText(staff.getPosition());
             }
-            if (users.getPassword() != null){
-                password.setText(users.getPassword());
+            if (staff.getPassword() != null){
+                password.setText(staff.getPassword());
             }
             add.setText(getString(R.string.update));
-            if (users.getAvatarUrl() != null) {
-                Glide.with(this).load(users.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(avatar);
+            if (staff.getAvatarUrl() != null) {
+                Glide.with(this).load(staff.getAvatarUrl()).apply(RequestOptions.circleCropTransform()).into(avatar);
             }
         }else {
             avatar.setEnabled(false);
@@ -216,9 +216,9 @@ public class EditUserActivity extends AppCompatActivity {
         }else {
             map.put("password", mPassword);
         }
-        if (users != null){
-            map.put("uidFriend", users.getUid());
-            map.put("avatarUrl", users.getAvatarUrl());
+        if (staff != null){
+            map.put("uidFriend", staff.getUid());
+            map.put("avatarUrl", staff.getAvatarUrl());
         }else {
             map.put("avatarUrl", "https://firebasestorage.googleapis.com/v0/b/quan-ly-nhan-vien.appspot.com/o/585e4bf3cb11b227491c339a.png?alt=media&token=01b70fd2-2eb0-4afb-a7e0-864be1a874d9");
         }
@@ -232,15 +232,8 @@ public class EditUserActivity extends AppCompatActivity {
         startActivityForResult(intent, IMAGE_REQUEST);
     }
 
-/*    private String getFileExtension(Uri uri){
-        ContentResolver contentResolver = this.getContentResolver();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
-    }*/
-
     private void uploadImage(){
         if (uriImage!= null){
-            //final StorageReference storageReference = mStorageReference.child(System.currentTimeMillis() + "." + getFileExtension(uriImage));
 
             uploadTask = mStorageReference.putFile(uriImage);
             uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -251,18 +244,18 @@ public class EditUserActivity extends AppCompatActivity {
                     }
                     return mStorageReference.getDownloadUrl();
                 }
-            }).addOnCompleteListener(new OnCompleteListener() {
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                 @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()){
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
                         Uri downloadUri = (Uri) task.getResult();
-                        if(downloadUri != null) {
+                        if (downloadUri != null) {
                             String mUri = downloadUri.toString();
-                            mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("users/" + users.getUid());
+                            mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("users/" + staff.getUid());
                             HashMap<String, Object> map = new HashMap<>();
                             map.put("avatarUrl", mUri);
                             mDatabaseReference.updateChildren(map);
-                        }else {
+                        } else {
                             Toast.makeText(EditUserActivity.this, getString(R.string.can_not_upload_image), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -307,6 +300,7 @@ public class EditUserActivity extends AppCompatActivity {
     private Task<String> modifyUser(HashMap<String, Object> data, String signal) {
         // Create the arguments to the callable function.
         Log.i(TAG, signal);
+        Log.i(TAG, data.toString());
         return mFunctions
                 .getHttpsCallable(signal)
                 .call(data)

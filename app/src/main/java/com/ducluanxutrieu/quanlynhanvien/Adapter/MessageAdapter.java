@@ -20,6 +20,8 @@ import java.util.List;
 
 
 public class MessageAdapter extends FirebaseRecyclerAdapter<MessageItem, MessageAdapter.ItemViewHolder> {
+
+    final public String TAG = "tagMessageAdapter";
     private static final int RIGHT_MSG = 0;
     private static final int LEFT_MSG = 1;
     private static final String nameUser = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
@@ -68,6 +70,7 @@ public class MessageAdapter extends FirebaseRecyclerAdapter<MessageItem, Message
 
     @Override
     public int getItemViewType(int position) {
+        Log.i(TAG, getItem(position).toString());
         if (getItem(position).getName().equals(nameUser)){
             return RIGHT_MSG;
         }else {
