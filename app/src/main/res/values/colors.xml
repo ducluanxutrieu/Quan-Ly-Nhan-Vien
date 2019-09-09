@@ -301,4 +301,23 @@
     <color name="md_blue_grey_800">#37474F</color>
     <color name="md_blue_grey_900">#263238</color>
 
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="off_white">#ffebcd</color>
+    <color name="main_color_gray">#7d7d7d</color>
+
+    <color name="default_chat_message_background_color_rcv">@color/white</color>
+    <color name="default_chat_message_background_color_send">@color/white</color>
+
+    <color name="default_bubble_color_rcv">@color/black</color>
+    <color name="default_bubble_color_send">@color/white</color>
+
+    <color name="default_tstamp_color_rcv">@color/off_white</color>
+    <color name="default_tstamp_color_send">@color/main_color_gray</color>
+
+    <color name="default_message_color_rcv">@color/white</color>
+    <color name="default_message_color_send">@color/black</color>
+
+    <color name="default_request_color_background">@color/main_color_gray</color>
+    <color name="dedault_name_request_color">#6495ED</color>
 </resources>

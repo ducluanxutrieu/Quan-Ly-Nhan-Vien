@@ -14,37 +14,29 @@ android:padding="@dimen/_4sdp"
     android:scaleType="centerInside"
     app:srcCompat="@drawable/avatar"
     />
-<LinearLayout
-    android:layout_width="0dp"
-    android:layout_height="match_parent"
-    android:layout_weight="1"
-    android:padding="@dimen/_8sdp"
-    android:orientation="vertical">
-    <android.support.v7.widget.AppCompatTextView
-        android:textColor="@color/md_black_1000"
-        android:textStyle="bold"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/friend_name"
-        />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <android.support.v7.widget.AppCompatTextView
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/margin_item"
+        android:layout_marginEnd="@dimen/margin_item"
+        >
+        <androidx.appcompat.widget.AppCompatTextView
             android:textColor="@color/md_grey_700"
             android:lines="1"
             android:maxLength="100"
             android:ellipsize="end"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/staff_name"
             />
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/position_staff"
             android:textColor="@color/md_grey_700"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
-</LinearLayout>
 </LinearLayout>

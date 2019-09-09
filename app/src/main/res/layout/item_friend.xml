@@ -19,7 +19,7 @@
         android:layout_weight="1"
         android:padding="@dimen/_8sdp"
         android:orientation="vertical">
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:textColor="@color/md_black_1000"
             android:textStyle="bold"
             android:layout_width="match_parent"
@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:textColor="@color/md_grey_700"
                 android:lines="1"
                 android:maxLength="100"
@@ -39,12 +39,12 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/recent_chat"
                 />
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:text=" · "
                 android:textColor="@color/md_grey_700"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 />

@@ -9,9 +9,18 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".Activity.ChatsActivity"
+    tools:context=".activity.ChatsActivity"
     >
-    <android.support.v7.widget.RecyclerView
+    <ProgressBar
+        android:id="@+id/loadmore_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/chats_recycler_view"
+        android:layout_alignParentTop="true"
+        android:visibility="gone"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chats_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,7 +28,7 @@
         android:divider="@android:color/transparent"
         >
 
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
     <LinearLayout
         android:id="@+id/chats_input_layout"
         android:layout_width="match_parent"
@@ -42,6 +51,7 @@
             app:srcCompat="@drawable/ic_menu_send"
             android:id="@+id/send_message_image_button"
             android:scaleType="fitCenter"
+            android:onClick="buttonSendListener"
             />
     </LinearLayout>
 </RelativeLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -15,6 +16,7 @@
             android:scaleType="centerCrop"
             app:srcCompat="@mipmap/header" />
 
+
         <ImageView
             android:id="@+id/user_profile_photo"
             android:layout_width="120dp"
@@ -23,7 +25,6 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="-60dp"
             android:elevation="5dp"
-            android:padding="20dp"
             android:scaleType="centerInside"
             app:srcCompat="@drawable/girl"
             android:foreground="@drawable/bg_circle_blue"
@@ -49,7 +50,6 @@
                 android:textStyle="bold" />
         </RelativeLayout>
 
-
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -57,59 +57,119 @@
             android:layout_marginTop="5dp"
             android:orientation="vertical">
 
-
-            <TextView
-                android:id="@+id/email_profile_email"
-                android:layout_width="fill_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_marginBottom="3dp"
-                android:layout_marginTop="3dp"
-                android:background="#fff"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:padding="20dp"
-                android:text="Email: "
-                android:focusable="true" />
+                android:orientation="horizontal"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_email_24dp"
+                    android:layout_gravity="center_vertical"
+                    />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_margin="@dimen/margin_item"
+                    >
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/email_profile_email"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:editable="false"
+                        android:hint="@string/email" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/user_profile_position"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="#fff"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:padding="20dp"
-                android:text="Position In Company: "
-                android:focusable="true" />
 
-            <TextView
-                android:id="@+id/user_profile_phone"
-                android:layout_width="fill_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:layout_marginBottom="3dp"
-                android:layout_marginTop="3dp"
-                android:background="#fff"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:padding="20dp"
-                android:text="Phone Number: "
-                android:focusable="true" />
+                android:orientation="horizontal"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_position_blue_24dp"
+                    android:layout_gravity="center_vertical"
+                    />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_margin="@dimen/margin_item"
+                    >
 
-            <TextView
-                android:id="@+id/user_profile_off_day"
-                android:layout_width="fill_parent"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/user_profile_position"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/position_in_company"
+                        android:editable="false"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:background="#fff"
-                android:clickable="true"
-                android:elevation="4dp"
-                android:padding="20dp"
-                android:text="Number Off Days: "
-                android:focusable="true" />
-            <android.support.design.widget.FloatingActionButton
+                android:orientation="horizontal"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_contact_phone_blue_24dp"
+                    android:layout_gravity="center_vertical"
+                    />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_margin="@dimen/margin_item"
+                    >
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/user_profile_phone"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="20dp"
+                        android:hint="@string/phone_number"
+                        android:editable="false"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_number_off_day_blue_24dp"
+                    android:layout_gravity="center_vertical"
+                    />
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_margin="@dimen/margin_item"
+                    >
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/user_profile_off_day"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/number_off_days"
+                        android:editable="false"
+                        />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/fab_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
